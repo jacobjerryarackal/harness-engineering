@@ -151,25 +151,36 @@ Symphony/
 │
 ├── README.md
 ├── SYSTEM_DESIGN.md
+├── pytest.ini
+├── requirements.txt
 │
-├── docs/
-│   └── architecture/
-│       ├── hld.png
-│       └── lld.png
-│
-├── harnesses/
-│   ├── specification/
-│   ├── research/
-│   ├── architecture/
-│   ├── engineering/
-│   ├── evaluation/
-│   ├── deployment/
-│   └── learning/
+├── app/
+│   ├── main.py
+│   ├── dependencies.py
+│   ├── routers/
+│   └── schemas/
 │
 ├── core/
-├── runtime/
+│   ├── orchestrator.py
+│   ├── interfaces.py
+│   └── execution_engine.py
+│
+├── harnesses/
+│   ├── base.py
+│   ├── registry.py
+│   └── [specification, research, architecture, engineering, evaluation, deployment, learning].py
+│
 ├── memory/
-└── examples/
+│   └── [memory, context, state, knowledge_graph, evidence_store, failure_repository, policy_engine].py
+│
+├── runtime/
+│   └── [production, telemetry, knowledge_extraction, learning_engine, memory_update].py
+│
+├── frontend/
+│   └── src/
+│
+└── tests/
+    └── [test_api, test_harnesses, test_memory, test_orchestrator, test_runtime].py
 ```
 
 ---
@@ -282,8 +293,13 @@ curl -X GET "http://127.0.0.1:8000/telemetry"
 
 Run the complete test suite (unit + FastAPI integration tests):
 ```bash
-python -m unittest discover -s tests
+pytest
 ```
+or
+```bash
+python -m pytest
+```
+
 
 ---
 
