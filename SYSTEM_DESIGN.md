@@ -1,346 +1,215 @@
-# Symphony
-## Autonomous Harness Operating System
+# 🎼 Symphony — System Design & Technical Architecture Document
 
-> A model-agnostic engineering orchestration platform that coordinates specialized harnesses across the complete software development lifecycle.
-
----
-
-# Overview
-
-Modern AI coding agents are capable of generating code, but they often lack a structured engineering workflow. Most systems execute requests in isolation without preserving engineering intent, organizational knowledge, production feedback, or reusable learning.
-
-Symphony addresses this challenge by introducing a Harness Operating System that orchestrates modular engineering capabilities instead of acting as a standalone coding agent.
-
-The platform routes engineering intent through specialized harnesses, shares platform-wide context and memory, and continuously improves using production telemetry and learning feedback.
+> **Autonomous Harness Operating System**  
+> *A model-agnostic engineering orchestration platform coordinating specialized harnesses across the complete software development lifecycle.*
 
 ---
 
-# Problem Statement
+## 1. Executive Overview
 
-Traditional AI coding systems face several limitations:
+Modern AI coding assistants generate code effectively but lack a structured engineering lifecycle. Execution in isolation fails to preserve engineering intent, organizational memory, failure post-mortems, or reusable domain knowledge.
 
-- No standardized engineering workflow
-- Limited reuse of engineering knowledge
-- Weak production feedback integration
-- Lack of modular orchestration
-- Poor separation of engineering responsibilities
-- Minimal continuous learning
-
-Symphony introduces a control plane responsible for coordinating modular engineering harnesses while maintaining shared organizational intelligence.
+**Symphony** resolves this challenge by introducing an **Autonomous Harness Operating System**. Instead of acting as a monolithic coding agent, Symphony functions as a **Control Plane** that coordinates specialized, single-responsibility **Engineering Harnesses**, maintains persistent **Shared Core Services**, and closes the operational feedback loop through continuous **Production Runtime Telemetry**.
 
 ---
 
-# Design Goals
+## 2. Problem Statement & Value Proposition
 
-The architecture is designed around the following principles:
+### Standard AI Coding Assistants vs. Symphony Harness OS
 
-- Model Agnostic
-- Harness First Architecture
-- Modular Engineering
-- Shared Platform Services
-- Evidence Driven Development
-- Continuous Learning
-- Production Feedback Loop
-- Human + AI Collaboration
-
----
-
-# High Level Design (HLD)
-
-![High Level Design](docs/architecture/hld.png)
-
-## Architecture Overview
-
-The High Level Design represents Symphony as an engineering orchestration platform composed of five major layers.
-
-### External World
-
-The platform receives engineering intent from external stakeholders including:
-
-- Business Goals
-- Requirements
-- Constraints
-- Success Metrics
-- User Feedback
-- Market Signals
-
-These inputs define the project objective before orchestration begins.
-
-### Symphony Orchestrator
-
-Symphony acts as the central control plane responsible for coordinating engineering activities.
-
-Instead of directly generating software artifacts, Symphony determines how work should flow across specialized engineering harnesses.
-
-### Harness Layer
-
-Engineering work is delegated to independent harnesses.
-
-The current architecture includes:
-
-- Specification Harness
-- Research Harness
-- Architecture Harness
-- Engineering Harness
-- Evaluation Harness
-- Deployment Harness
-- Learning Harness
-
-Each harness focuses on one engineering responsibility while remaining reusable and independent.
-
-### Shared Core Services
-
-All harnesses share common platform capabilities.
-
-These include:
-
-- Memory
-- Context
-- State
-- Knowledge Graph
-- Evidence Store
-- Failure Repository
-- Policy Engine
-
-This shared intelligence prevents duplicated reasoning and enables reusable engineering knowledge.
-
-### Production Runtime
-
-After execution, artifacts enter production where telemetry, failures, and operational insights are continuously collected.
-
-Rather than treating failures as losses, Symphony converts operational feedback into organizational knowledge.
+| Engineering Dimension | Traditional AI Coding Assistants | Symphony Harness OS |
+| :--- | :--- | :--- |
+| **Orchestration** | Monolithic prompt loops | Specialized Harness Control Plane |
+| **Knowledge Retention** | Ephemeral context window | Persistent Shared Core Services & Knowledge Graph |
+| **Operational Feedback** | Open-loop (stops at code generation) | Closed-loop (Telemetry → Learning Engine → Memory Update) |
+| **Separation of Concerns** | Single prompt handles all roles | Dedicated Harnesses (Spec, Research, Arch, Eng, Eval, Deploy, Learn) |
+| **Evidence Validation** | Unverified outputs | Hard evidence tracking in Evidence Store & Failure Repo |
 
 ---
 
-# Low Level Design (LLD)
+## 3. Key Architectural Principles
 
-![Low Level Design](docs/architecture/lld.png)
-
-## Symphony Control Plane
-
-The Low Level Design expands the internal architecture of the Symphony Orchestrator.
-
-The execution pipeline consists of several specialized components.
-
-### Intent Analyzer
-
-Extracts engineering intent from incoming requests.
-
-### Harness Router
-
-Determines which engineering domains are required.
-
-### Harness Selector
-
-Selects one or more harnesses capable of solving the current engineering task.
-
-### Execution Planner
-
-Creates the execution strategy for the selected harnesses.
-
-### Context Manager
-
-Retrieves relevant organizational memory and contextual information from shared platform services.
-
-### Execution Engine
-
-Executes the selected engineering harnesses while coordinating shared resources.
-
-### Response Aggregator
-
-Collects generated engineering artifacts before forwarding them to downstream systems.
+1. **Model Agnostic**: Pure orchestration logic decoupled from underlying LLM inference providers.
+2. **Harness-First Engineering**: Domain responsibilities isolated into modular, reusable harnesses (`Harness` abstract base class).
+3. **Shared Organizational Intelligence**: Shared platform memory preventing duplicated reasoning across runs.
+4. **Evidence-Driven Validation**: System outputs verified by explicit evidence storage (`EvidenceStoreService`).
+5. **Continuous Learning Loop**: Production execution failures and metrics converted into persistent knowledge base triples (*"Loss becomes Information"*).
 
 ---
 
-# Shared Core Services
+## 4. High-Level Design (HLD)
 
-The orchestrator relies on several reusable platform services.
+![Symphony High-Level Design (HLD)](docs/architecture/hld.png)
+*Figure 1: High-Level Design — Symphony Control Plane Layering, Shared Core Services, and Closed-Loop Production Feedback.*
 
-- Memory
-- Context
-- State
-- Knowledge Graph
-- Evidence
-- Policy
+### 4.1 System Layering
 
-These services provide persistent engineering intelligence across all project executions.
+The High-Level Architecture consists of five distinct layers:
 
----
-
-# Harness Registry
-
-The Harness Registry maintains all available engineering capabilities.
-
-Current registered harnesses include:
-
-- Specification
-- Research
-- Architecture
-- Engineering
-- Evaluation
-- Deployment
-- Learning
-
-The Execution Engine communicates bidirectionally with the registry, allowing harness invocation and artifact retrieval.
+1. **External World**: Stakeholders submit raw intent (requirements, constraints, features, bug fixes).
+2. **Symphony Control Plane (`core.orchestrator.SymphonyOrchestrator`)**: Analyzes intent, routes requests, builds plans, and orchestrates harness execution.
+3. **Harness Layer (`harnesses.*`)**: Modular domain harnesses that perform specialized engineering work.
+4. **Shared Core Services (`memory.*`)**: Persistent platform memory, state, policies, knowledge graphs, evidence, and failure logs.
+5. **Production Runtime (`runtime.*`)**: Executes generated artifacts, captures telemetry metrics, extracts operational insights, and applies learning updates back to Shared Core Services.
 
 ---
 
-# Runtime Feedback Loop
+## 5. Low-Level Design (LLD) — Control Plane Pipeline
 
-After execution:
+![Symphony Low-Level Design (LLD)](docs/architecture/lld.png)
+*Figure 2: Low-Level Design — Internal Pipeline Execution Flow of the Symphony Control Plane.*
 
-Execution Artifacts
+### 5.1 Pipeline Stages & Implementation Mapping
 
-↓
-
-Production Runtime
-
-↓
-
-Telemetry
-
-↓
-
-Knowledge Extraction
-
-↓
-
-Learning Engine
-
-↓
-
-Memory Update
-
-↓
-
-Shared Core Services
-
-This continuous learning loop allows every completed project to improve future engineering decisions.
-
-The guiding principle of Symphony is:
-
-> **Loss becomes Information.**
+| Pipeline Stage | Implementation Class | Responsibilities |
+| :--- | :--- | :--- |
+| **1. Intent Analysis** | `core.intent_analyzer.PatternIntentAnalyzer` | Parses input text into structured `Intent` (intent type, required domains). |
+| **2. Harness Routing** | `core.harness_router.DomainHarnessRouter` | Orders required `Domain` enums sequentially into standard engineering order. |
+| **3. Harness Selection** | `core.harness_selector.RegistryHarnessSelector` | Queries `harnesses.registry.HarnessRegistry` for matching domain harness instances. |
+| **4. Strategy Planning** | `core.execution_planner.SequentialExecutionPlanner` | Generates a linear `ExecutionPlan` containing structured `ExecutionStep` items. |
+| **5. Context Preparation**| `core.context_manager.PlatformContextManager` | Assembles `ExecutionContext` from session variables, workspace state, policies, and triples. |
+| **6. Harness Execution** | `core.execution_engine.Engine` | Sequentially executes steps, logs execution traces, and propagates state/variable updates. |
+| **7. Artifact Aggregation**| `core.response_aggregator.ArtifactAggregator` | Consolidates generated code files, test results, and deployment status into `ExecutionArtifacts`. |
 
 ---
 
-# Architectural Decisions
+## 6. Shared Core Services Architecture
 
-## Why a Control Plane?
+All harnesses and orchestrator components interact with 7 standardized platform services defined in the `memory` module:
 
-Separating orchestration from execution enables Symphony to remain modular and model agnostic.
+```text
+               ┌─────────────────────────────────────────┐
+               │         Shared Core Services            │
+               ├────────────────────┬────────────────────┤
+               │ MemoryService      │ ContextService     │
+               │ StateService       │ KnowledgeGraph     │
+               │ EvidenceStore      │ FailureRepository  │
+               │ PolicyEngine       │                    │
+               └────────────────────┴────────────────────┘
+```
 
-## Why Harnesses?
-
-Engineering responsibilities are isolated into reusable modules, improving scalability and maintainability.
-
-## Why Shared Core Services?
-
-Persistent organizational knowledge eliminates repeated reasoning and enables consistent engineering practices.
-
-## Why Continuous Learning?
-
-Production feedback continuously improves future project execution rather than remaining isolated inside individual projects.
-
----
-
-# Future Roadmap
-
-Future versions of Symphony may include:
-
-- Dynamic Harness Discovery
-- Multi-Agent Collaboration
-- Distributed Execution
-- Plugin Marketplace
-- Human Approval Workflows
-- Cloud Native Deployment
-- Autonomous Engineering Teams
+1. **`MemoryService` (`memory.memory_service`)**: Captures execution traces and step logs per `run_id`.
+2. **`ContextService` (`memory.context_service`)**: Stores key-value session context variables shared across harnesses.
+3. **`StateService` (`memory.state_service`)**: Tracks current workspace and project component state.
+4. **`KnowledgeGraphService` (`memory.knowledge_graph`)**: Stores semantically linked RDF-style subject-predicate-object triples.
+5. **`EvidenceStoreService` (`memory.evidence_store`)**: Records hard evidence (code artifacts, test outputs, execution evidence).
+6. **`FailureRepository` (`memory.failure_repository`)**: Maintains incident post-mortems, crash details, and error messages.
+7. **`PolicyEngineService` (`memory.policy_engine`)**: Evaluates compliance constraints and engineering rules against active context.
 
 ---
 
-# Key Architectural Principles
+## 7. Harness Layer & Registry System
 
-- Model Agnostic
-- Harness First
-- Modular Engineering
-- Evidence Driven
-- Shared Organizational Intelligence
-- Continuous Learning
-- Human + AI Collaboration
+Engineering capabilities are encapsulated as domain implementations inheriting from `harnesses.base.Harness`:
+
+* **`SpecificationHarness`** (`Domain.SPECIFICATION`): Generates engineering specifications and acceptance criteria.
+* **`ResearchHarness`** (`Domain.RESEARCH`): Investigates technical options, patterns, and dependencies.
+* **`ArchitectureHarness`** (`Domain.ARCHITECTURE`): Produces component designs, schemas, and system blueprints.
+* **`EngineeringHarness`** (`Domain.ENGINEERING`): Generates application code, modules, and implementation files.
+* **`EvaluationHarness`** (`Domain.EVALUATION`): Runs test suites, validates acceptance criteria, and measures performance.
+* **`DeploymentHarness`** (`Domain.DEPLOYMENT`): Prepares deployment artifacts, container configurations, and release manifests.
+* **`LearningHarness`** (`Domain.LEARNING`): Analyzes failure post-mortems and formulates platform memory updates.
+
+The **`HarnessRegistry`** (`harnesses.registry`) maintains active domain instances and handles dynamic lookup during orchestration.
 
 ---
 
-# Repository Structure
+## 8. Closed-Loop Production Feedback & Learning Loop
+
+Symphony implements a closed-loop runtime feedback mechanism:
+
+```text
+[ ExecutionArtifacts ]
+          │
+          ▼
+[ ProductionRuntime ] ──── (Simulates environment deployment & execution)
+          │
+          ▼
+[ TelemetryCollector ] ─── (Collects logs, exit codes, and metrics)
+          │
+          ▼
+[ KnowledgeExtractor ] ─── (Extracts FAILURE_EVENT / SUCCESS_EVENT structures)
+          │
+          ▼
+[ LearningEngine ] ─────── (Generates LOG_FAILURE & ADD_TRIPLE update actions)
+          │
+          ▼
+[ MemoryUpdater ] ──────── (Applies updates to KnowledgeGraph, FailureRepo & EvidenceStore)
+          │
+          ▼
+[ Shared Core Services ] ── (Enriches future orchestrator runs)
+```
+
+Guiding Philosophy: **"Loss becomes Information."** Operational failures automatically refine future harness executions.
+
+---
+
+## 9. Architectural Decision Records (ADRs)
+
+### ADR 1: Control Plane Orchestration Over Monolithic Agents
+* **Decision**: Separate orchestration (`core.orchestrator`) from execution (`harnesses.*`).
+* **Rationale**: Prevents prompt pollution, isolates domain failures, and allows model-agnostic harness scaling.
+
+### ADR 2: In-Memory Dependency Container (`app.dependencies.Container`)
+* **Decision**: Manage shared core services via a centralized singleton dependency container.
+* **Rationale**: Ensures state consistency across REST API endpoints (`/execute`, `/memory`, `/knowledge-graph`, `/failures`, `/telemetry`).
+
+### ADR 3: Evidence Store Integration in Feedback Loop
+* **Decision**: Mandate evidence persistence (`EvidenceStoreService`) during post-execution learning updates.
+* **Rationale**: Guarantees auditable proof of code generation and test verification.
+
+---
+
+## 10. Repository Structure & Implementation Mapping
 
 ```text
 Symphony/
-├── README.md
-├── SYSTEM_DESIGN.md
-├── pytest.ini
-├── requirements.txt
+├── README.md                           # Project overview & FastAPI showcase instructions
+├── SYSTEM_DESIGN.md                    # Technical architecture specification
+├── pytest.ini                          # Test runner root configuration
+├── requirements.txt                    # Python dependencies (FastAPI, Pydantic V2, Uvicorn, Pytest)
 │
-├── app/
-│   ├── main.py
-│   ├── dependencies.py
+├── app/                                # FastAPI Web API Layer
+│   ├── main.py                         # Application entrypoint (CORS, Lifespan handler)
+│   ├── dependencies.py                 # Singleton Container dependency injection
 │   ├── routers/
-│   │   ├── execute.py
-│   │   ├── memory.py
-│   │   └── health.py
+│   │   ├── execute.py                  # POST /execute (Main workflow orchestration endpoint)
+│   │   ├── memory.py                   # GET /memory, /knowledge-graph, /failures, /telemetry
+│   │   └── health.py                   # GET /health
 │   └── schemas/
-│       └── schemas.py
+│       └── schemas.py                  # Pydantic V2 request & response models
 │
-├── core/
-│   ├── orchestrator.py
-│   ├── interfaces.py
-│   ├── intent_analyzer.py
-│   ├── harness_router.py
-│   ├── harness_selector.py
-│   ├── execution_planner.py
-│   ├── context_manager.py
-│   ├── execution_engine.py
-│   └── response_aggregator.py
+├── core/                               # Symphony Control Plane Core
+│   ├── orchestrator.py                 # SymphonyOrchestrator main execution flow
+│   ├── interfaces.py                   # Core dataclasses (Intent, ExecutionPlan, HarnessResult)
+│   ├── intent_analyzer.py              # PatternIntentAnalyzer keyword parsing
+│   ├── harness_router.py               # DomainHarnessRouter sequential ordering
+│   ├── harness_selector.py             # RegistryHarnessSelector lookup
+│   ├── execution_planner.py            # SequentialExecutionPlanner strategy
+│   ├── context_manager.py              # PlatformContextManager context assembly
+│   ├── execution_engine.py             # Engine sequential step coordinator
+│   └── response_aggregator.py          # ArtifactAggregator output compilation
 │
-├── harnesses/
-│   ├── __init__.py
-│   ├── base.py
-│   ├── registry.py
-│   ├── specification.py
-│   ├── research.py
-│   ├── architecture.py
-│   ├── engineering.py
-│   ├── evaluation.py
-│   ├── deployment.py
-│   └── learning.py
+├── harnesses/                          # Domain Harness Implementations
+│   ├── base.py                         # Abstract Harness base class
+│   ├── registry.py                     # HarnessRegistry domain mapping
+│   └── [specification, research, architecture, engineering, evaluation, deployment, learning].py
 │
-├── memory/
-│   ├── memory_service.py
-│   ├── context_service.py
-│   ├── state_service.py
-│   ├── knowledge_graph.py
-│   ├── evidence_store.py
-│   ├── failure_repository.py
-│   └── policy_engine.py
+├── memory/                             # Shared Core Services Layer
+│   └── [memory, context, state, knowledge_graph, evidence_store, failure_repository, policy_engine].py
 │
-├── runtime/
-│   ├── production.py
-│   ├── telemetry.py
-│   ├── knowledge_extraction.py
-│   ├── learning_engine.py
-│   └── memory_update.py
+├── runtime/                            # Production Feedback & Learning Loop
+│   └── [production, telemetry, knowledge_extraction, learning_engine, memory_update].py
 │
-├── frontend/
-│   └── src/
+├── frontend/                           # Next.js / React Flow Interactive Control Plane UI
+│   └── src/components/                # RealtimeFlow, ExecuteView, MemoryView, RightPanel
 │
-└── tests/
-    ├── test_api.py
-    ├── test_harnesses.py
-    ├── test_memory.py
-    ├── test_orchestrator.py
-    └── test_runtime.py
+└── tests/                              # Automated Pytest Suite
+    └── [test_api, test_harnesses, test_memory, test_orchestrator, test_runtime].py
 ```
-
 
 ---
 
-# Conclusion
+## 11. Conclusion
 
-Symphony introduces a model-agnostic Harness Operating System that coordinates modular engineering capabilities through a centralized control plane. By combining orchestrated execution, shared platform services, and continuous learning from production feedback, Symphony enables scalable, reusable, and progressively improving AI-native software engineering workflows.
+Symphony establishes a model-agnostic **Autonomous Harness Operating System** that elevates AI software engineering from isolated code generation to structured orchestration. By decoupling control plane routing from specialized domain harnesses and integrating a continuous production learning loop, Symphony ensures every execution permanently enriches organizational intelligence.
