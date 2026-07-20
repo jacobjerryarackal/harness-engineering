@@ -63,8 +63,12 @@ export const ExecuteView: React.FC = () => {
 
       setLogs((prev) => [...prev, `[System] Execution finished successfully. Artifacts compiled.`]);
     } catch (err: any) {
-      setError(err.message || 'Execution error');
-      setLogs((prev) => [...prev, `[System Error] ${err.message}`]);
+      const isNetworkError = err.name === 'TypeError' || err.message?.includes('fetch') || err.message?.includes('Failed to fetch');
+      const errorMessage = isNetworkError
+        ? 'Unable to connect to Symphony Control Plane API (http://localhost:8000). Please verify the FastAPI backend server is running.'
+        : (err.message || 'Execution error');
+      setError(errorMessage);
+      setLogs((prev) => [...prev, `[System Error] ${errorMessage}`]);
     } finally {
       setIsRunning(false);
     }
@@ -74,23 +78,24 @@ export const ExecuteView: React.FC = () => {
     <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden h-[calc(100vh-3.5rem)]">
       {/* Top Prompt Controls Bar */}
       <div className="glass-panel p-4 rounded-xl border border-zinc-800 space-y-3 shadow-xl">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2 font-mono text-xs text-zinc-300">
             <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span className="font-bold">ENGINEERING INTENT PROMPT</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {samplePrompts.map((p, i) => (
               <button
                 key={i}
                 onClick={() => setPrompt(p)}
-                className="text-[10px] font-mono px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition-all hidden lg:block"
+                className="text-[10px] font-mono px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition-all"
               >
                 Sample 0{i + 1}
               </button>
             ))}
           </div>
         </div>
+
 
         <div className="flex items-center gap-3">
           <input
