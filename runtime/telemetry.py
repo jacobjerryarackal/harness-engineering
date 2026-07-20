@@ -1,3 +1,4 @@
+import time
 from typing import Any, Dict
 
 class TelemetryCollector:
@@ -11,5 +12,6 @@ class TelemetryCollector:
             "exit_code": runtime_output.get("exit_code", -1),
             "logs": runtime_output.get("logs", []),
             "metrics": runtime_output.get("metrics", {}),
-            "timestamp": runtime_output.get("timestamp", -1.0)
+            "timestamp": runtime_output.get("timestamp", time.time())
         }
+
