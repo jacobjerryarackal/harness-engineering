@@ -271,31 +271,73 @@ Future versions of Symphony may include:
 
 # Repository Structure
 
-```
+```text
 Symphony/
-
-├── docs/
-│   └── architecture/
-│       ├── hld.png
-│       └── lld.png
+├── README.md
+├── SYSTEM_DESIGN.md
+├── pytest.ini
+├── requirements.txt
 │
-├── harnesses/
-│   ├── specification/
-│   ├── research/
-│   ├── architecture/
-│   ├── engineering/
-│   ├── evaluation/
-│   ├── deployment/
-│   └── learning/
+├── app/
+│   ├── main.py
+│   ├── dependencies.py
+│   ├── routers/
+│   │   ├── execute.py
+│   │   ├── memory.py
+│   │   └── health.py
+│   └── schemas/
+│       └── schemas.py
 │
 ├── core/
+│   ├── orchestrator.py
+│   ├── interfaces.py
+│   ├── intent_analyzer.py
+│   ├── harness_router.py
+│   ├── harness_selector.py
+│   ├── execution_planner.py
+│   ├── context_manager.py
+│   ├── execution_engine.py
+│   └── response_aggregator.py
 │
-├── runtime/
+├── harnesses/
+│   ├── __init__.py
+│   ├── base.py
+│   ├── registry.py
+│   ├── specification.py
+│   ├── research.py
+│   ├── architecture.py
+│   ├── engineering.py
+│   ├── evaluation.py
+│   ├── deployment.py
+│   └── learning.py
 │
 ├── memory/
+│   ├── memory_service.py
+│   ├── context_service.py
+│   ├── state_service.py
+│   ├── knowledge_graph.py
+│   ├── evidence_store.py
+│   ├── failure_repository.py
+│   └── policy_engine.py
 │
-└── SYSTEM_DESIGN.md
+├── runtime/
+│   ├── production.py
+│   ├── telemetry.py
+│   ├── knowledge_extraction.py
+│   ├── learning_engine.py
+│   └── memory_update.py
+│
+├── frontend/
+│   └── src/
+│
+└── tests/
+    ├── test_api.py
+    ├── test_harnesses.py
+    ├── test_memory.py
+    ├── test_orchestrator.py
+    └── test_runtime.py
 ```
+
 
 ---
 
