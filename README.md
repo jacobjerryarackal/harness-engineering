@@ -120,13 +120,19 @@ Shared Core Services ◄── Memory Updater ◄── Learning Engine ◄─�
 
 ---
 
-## Live Demo & Interface
+## Live Demo
 
-Symphony features a full-stack interface exposing real-time Control Plane orchestration:
+### Production Deployment
 
-* **Interactive Frontend**: Accessible at `http://localhost:3000` (Next.js 15, Tailwind CSS, React Flow interactive node graph).
-* **REST API Server**: Accessible at `http://localhost:8000` (FastAPI, Pydantic V2, Uvicorn).
-* **Interactive API Documentation (Swagger)**: Accessible at `http://localhost:8000/docs`.
+| Service | URL |
+|----------|-----|
+| Symphony Operating System | https://harness-engineering-murex.vercel.app |
+| Symphony FastAPI Backend | https://symphony-os.onrender.com |
+| Swagger API Documentation | https://symphony-os.onrender.com/docs |
+| Health Endpoint | https://symphony-os.onrender.com/health |
+
+> **Note**
+> The backend is hosted on Render's free tier. The first request after inactivity may take 30–60 seconds while the service wakes up.
 
 ---
 
