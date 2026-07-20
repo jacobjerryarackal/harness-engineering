@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import Any, Optional
 from core.interfaces import ExecutionArtifacts
 from core.intent_analyzer import IntentAnalyzer, PatternIntentAnalyzer
 from core.harness_router import HarnessRouter, DomainHarnessRouter
@@ -8,7 +8,6 @@ from core.execution_planner import ExecutionPlanner, SequentialExecutionPlanner
 from core.context_manager import ContextManager, PlatformContextManager
 from core.execution_engine import ExecutionEngine, Engine
 from core.response_aggregator import ResponseAggregator, ArtifactAggregator
-from harnesses.registry import HarnessRegistry
 
 class SymphonyOrchestrator:
     """Central control plane orchestrator for Symphony Harness OS."""
@@ -22,8 +21,9 @@ class SymphonyOrchestrator:
         context_manager: Optional[ContextManager] = None,
         execution_engine: Optional[ExecutionEngine] = None,
         response_aggregator: Optional[ResponseAggregator] = None,
-        harness_registry: Optional[HarnessRegistry] = None,
+        harness_registry: Optional[Any] = None,
     ) -> None:
+        from harnesses.registry import HarnessRegistry
         self.intent_analyzer = intent_analyzer or PatternIntentAnalyzer()
         self.harness_router = harness_router or DomainHarnessRouter()
         self.harness_selector = harness_selector or RegistryHarnessSelector()

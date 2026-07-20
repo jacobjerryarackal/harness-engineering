@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 from core.interfaces import ExecutionContext, ExecutionPlan, HarnessResult
-from harnesses.registry import HarnessRegistry
 from memory.memory_service import MemoryService
 from memory.failure_repository import FailureRepository
 
@@ -13,7 +12,7 @@ class ExecutionEngine(ABC):
         self,
         plan: ExecutionPlan,
         context: ExecutionContext,
-        registry: HarnessRegistry
+        registry: Any
     ) -> List[HarnessResult]:
         """Runs the execution steps in order, passing states along."""
         pass
@@ -33,7 +32,7 @@ class Engine(ExecutionEngine):
         self,
         plan: ExecutionPlan,
         context: ExecutionContext,
-        registry: HarnessRegistry
+        registry: Any
     ) -> List[HarnessResult]:
         """Runs execution steps sequentially, passing updated states and stopping on failure."""
         results: List[HarnessResult] = []
