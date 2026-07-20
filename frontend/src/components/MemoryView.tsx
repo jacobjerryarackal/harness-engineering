@@ -26,8 +26,16 @@ export const MemoryView: React.FC = () => {
   }, []);
 
   const tracesMap = data?.traces || {};
-  const contextVars = data?.context_variables || {};
-  const projectState = data?.project_state || {};
+  const contextVars = Object.entries(data?.context_variables || {}).filter(
+    ([k, v]) =>
+      k.toLowerCase().includes(search.toLowerCase()) ||
+      JSON.stringify(v).toLowerCase().includes(search.toLowerCase())
+  );
+  const projectState = Object.entries(data?.project_state || {}).filter(
+    ([k, v]) =>
+      k.toLowerCase().includes(search.toLowerCase()) ||
+      JSON.stringify(v).toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="flex-1 p-6 space-y-6 overflow-auto h-[calc(100vh-3.5rem)]">
@@ -72,13 +80,13 @@ export const MemoryView: React.FC = () => {
               Session Context
             </h3>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-              {Object.keys(contextVars).length} Keys
+              {contextVars.length} Keys
             </span>
           </div>
 
           <div className="space-y-2 max-h-[350px] overflow-auto pr-1">
-            {Object.entries(contextVars).length > 0 ? (
-              Object.entries(contextVars).map(([k, v]) => (
+            {contextVars.length > 0 ? (
+              contextVars.map(([k, v]) => (
                 <div key={k} className="bg-zinc-900/80 p-3 rounded-lg border border-zinc-800 font-mono text-xs space-y-1">
                   <div className="text-cyan-400 font-semibold text-[11px]">{k}</div>
                   <div className="text-zinc-300 text-[11px] break-all">{JSON.stringify(v)}</div>
@@ -98,13 +106,13 @@ export const MemoryView: React.FC = () => {
               Workspace State
             </h3>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              {Object.keys(projectState).length} Variables
+              {projectState.length} Variables
             </span>
           </div>
 
           <div className="space-y-2 max-h-[350px] overflow-auto pr-1">
-            {Object.entries(projectState).length > 0 ? (
-              Object.entries(projectState).map(([k, v]) => (
+            {projectState.length > 0 ? (
+              projectState.map(([k, v]) => (
                 <div key={k} className="bg-zinc-900/80 p-3 rounded-lg border border-zinc-800 font-mono text-xs space-y-1">
                   <div className="text-indigo-400 font-semibold text-[11px]">{k}</div>
                   <div className="text-zinc-300 text-[11px] break-all">{JSON.stringify(v)}</div>
