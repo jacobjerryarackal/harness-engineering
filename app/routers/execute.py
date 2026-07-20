@@ -35,7 +35,19 @@ def execute_goal(
             learning_updates,
             c.knowledge_graph,
             c.policy_engine,
-            c.failure_repository
+            c.failure_repository,
+            c.evidence_store
+        )
+
+        # Store execution artifacts as hard evidence
+        c.evidence_store.store_evidence(
+            run_id=artifacts.run_id,
+            evidence_type="execution_artifacts",
+            content={
+                "generated_files": artifacts.generated_files,
+                "test_results": artifacts.test_results,
+                "deployment_status": artifacts.deployment_status
+            }
         )
 
         plan_summary = [
@@ -61,9 +73,16 @@ def execute_goal(
             learning_updates=learning_updates
         )
 
+    except ValueError as ve:
+        logger.warning(f"Validation error during execution: {ve}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid execution request: {str(ve)}"
+        )
     except Exception as e:
         logger.error(f"Error during orchestrator execution: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Execution error: {str(e)}"
         )
+
