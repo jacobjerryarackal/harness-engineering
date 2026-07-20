@@ -219,6 +219,74 @@ It is an **Autonomous Harness Operating System** that orchestrates reusable engi
 
 ---
 
+# 🚀 FastAPI Showcase
+
+Symphony provides an API showcase exposing the complete orchestration lifecycle, memory state, knowledge graph triples, failure repository, and production feedback telemetry.
+
+## Running the API Server
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Start the Uvicorn dev server:
+```bash
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+3. Interactive OpenAPI Documentation:
+Navigate to [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) in your browser.
+
+---
+
+## API Endpoints & Example Requests
+
+### 1. Health Check
+```bash
+curl -X GET "http://127.0.0.1:8000/health"
+```
+
+### 2. Execute Engineering Goal (`POST /execute`)
+Triggers intent analysis, harness routing, strategy planning, harness execution, production simulation, telemetry gathering, and memory updates.
+
+```bash
+curl -X POST "http://127.0.0.1:8000/execute" \
+     -H "Content-Type: application/json" \
+     -d '{"request_text": "Write spec, implement and test a python module", "run_id": "demo-run-1"}'
+```
+
+### 3. Retrieve Memory State (`GET /memory`)
+```bash
+curl -X GET "http://127.0.0.1:8000/memory"
+```
+
+### 4. Query Knowledge Graph Triples (`GET /knowledge-graph`)
+```bash
+curl -X GET "http://127.0.0.1:8000/knowledge-graph"
+```
+
+### 5. Inspect Failure Repository (`GET /failures`)
+```bash
+curl -X GET "http://127.0.0.1:8000/failures"
+```
+
+### 6. View Telemetry History (`GET /telemetry`)
+```bash
+curl -X GET "http://127.0.0.1:8000/telemetry"
+```
+
+---
+
+## Running Automated Tests
+
+Run the complete test suite (unit + FastAPI integration tests):
+```bash
+python -m unittest discover -s tests
+```
+
+---
+
 ## License
 
 MIT License
