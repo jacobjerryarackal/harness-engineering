@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,15 +25,22 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for explicit local frontend and API origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# Parse allowed origins from environment variable with fallback to local origins
+raw_origins = os.getenv("ALLOWED_ORIGINS", "")
+if raw_origins:
+    allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+else:
+    allowed_origins = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-    ],
+    ]
+
+# Enable CORS for frontend application requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,4 +50,5 @@ app.add_middleware(
 app.include_router(execute.router)
 app.include_router(memory.router)
 app.include_router(health.router)
+
 
