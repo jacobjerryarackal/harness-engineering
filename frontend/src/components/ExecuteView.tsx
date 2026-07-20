@@ -30,17 +30,21 @@ export const ExecuteView: React.FC = () => {
     setNodeStates({});
 
     try {
-      // Simulate step-by-step pipeline animation on the flow graph
+      // Call API
+      const res = await executeGoal({ request_text: prompt });
+      setResponse(res);
+
+      // Build dynamic node animation sequence based on selected harnesses
+      const activeHarnessNodeIds = (res.selected_harnesses || []).map(
+        (d) => `${d.toLowerCase()}-harness`
+      );
+
       const stepsSequence = [
         'intent-analyzer',
         'harness-router',
         'harness-selector',
         'execution-planner',
-        'spec-harness',
-        'research-harness',
-        'arch-harness',
-        'eng-harness',
-        'eval-harness',
+        ...activeHarnessNodeIds,
         'deploy-harness',
         'learn-harness',
         'telemetry-node',
@@ -48,19 +52,12 @@ export const ExecuteView: React.FC = () => {
         'memory-update-node',
       ];
 
-      // Mark first node running
-      setNodeStates((prev) => ({ ...prev, [stepsSequence[0]]: 'running' }));
-
-      // Call API
-      const res = await executeGoal({ request_text: prompt });
-      setResponse(res);
-
       // Animate node progression
       for (let i = 0; i < stepsSequence.length; i++) {
         const nodeId = stepsSequence[i];
         setNodeStates((prev) => ({ ...prev, [nodeId]: 'running' }));
         setLogs((prev) => [...prev, `[Control Plane] Step ${i + 1}/${stepsSequence.length}: Executing ${nodeId}...`]);
-        await new Promise((r) => setTimeout(r, 120));
+        await new Promise((r) => setTimeout(r, 100));
         setNodeStates((prev) => ({ ...prev, [nodeId]: res.success ? 'success' : 'failure' }));
       }
 
