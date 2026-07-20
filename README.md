@@ -33,7 +33,11 @@
 | **Closed-Loop Feedback** | Converts production runtime failures into structured knowledge triples (*"Loss becomes Information"*). |
 | **Full Stack Control Plane** | High-performance FastAPI backend paired with an interactive Next.js / React Flow visualizer. |
 
+> **IMPORTANT: Orchestration System Scope**  
+> Symphony is an **Autonomous Harness Operating System** designed for engineering orchestration, planning, execution coordination, telemetry, and memory. It intentionally does **NOT** generate application code or act as an LLM code generator. Instead, it produces **runtime orchestration artifacts** (Execution Plans, Harness Selection Registries, Execution Summaries, Runtime Telemetry Reports, Learning Post-Mortems, and Semantic Knowledge Triples) representing the actual operational state of the Control Plane.
+
 ---
+
 
 ## Why Symphony?
 
