@@ -213,7 +213,25 @@ Symphony/
 
 ---
 
-## Quick Start
+## Environment Variables
+
+### Backend Configuration (`.env`)
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| `PORT` | Port number for Uvicorn ASGI server | `8000` | No |
+| `HOST` | Bind network host interface | `0.0.0.0` | No |
+| `ALLOWED_ORIGINS` | Comma-separated CORS origins allowed to invoke API | `http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000` | No |
+
+### Frontend Configuration (`frontend/.env.local`)
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| `NEXT_PUBLIC_API_URL` | Public API URL for FastAPI Control Plane backend | `http://127.0.0.1:8000` | Yes (Production) |
+
+---
+
+## Quick Start & Local Development
 
 ### Prerequisites
 
@@ -222,11 +240,14 @@ Symphony/
 
 ### 1. Backend Setup
 
-Clone the repository and install dependencies:
+Clone the repository and set up environment:
 
 ```bash
 git clone https://github.com/jacobjerryarackal/harness-engineering.git
 cd harness-engineering
+
+# Copy example environment file
+cp .env.example .env
 
 # Install Python requirements
 pip install -r requirements.txt
@@ -238,29 +259,63 @@ Run the automated test suite:
 pytest
 ```
 
-Start the FastAPI backend server:
+Start the Uvicorn ASGI dev server:
 
 ```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-The API will be available at `http://127.0.0.1:8000`. Access interactive Swagger documentation at `http://127.0.0.1:8000/docs`.
+The API will be live at `http://127.0.0.1:8000`. Access interactive Swagger documentation at `http://127.0.0.1:8000/docs`.
 
 ### 2. Frontend Setup
 
-In a separate terminal window, start the Next.js web application:
+In a separate terminal, set up and run the Next.js interface:
 
 ```bash
 cd frontend
 
-# Install Node modules
+# Copy example environment file
+cp .env.example .env.local
+
+# Install Node dependencies
 npm install
 
-# Start local development server
+# Launch Next.js dev server
 npm run dev
 ```
 
 Open `http://localhost:3000` in your web browser to launch the Symphony Control Plane interface.
+
+---
+
+## Production Deployment
+
+### 1. Backend Deployment (Railway)
+
+Symphony's FastAPI backend can be deployed to Railway in minutes:
+
+1. Create a new project on [Railway](https://railway.app/).
+2. Select **Deploy from GitHub repo** and select `harness-engineering`.
+3. Set the **Start Command**:
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port $PORT
+   ```
+4. Configure Railway **Environment Variables**:
+   * `ALLOWED_ORIGINS`: `https://your-symphony-frontend.vercel.app`
+   * `PORT`: `8000` (or leave default assigned by Railway)
+5. Copy your deployed Railway backend URL (e.g. `https://symphony-api-production.up.railway.app`).
+
+### 2. Frontend Deployment (Vercel)
+
+Symphony's Next.js dashboard is optimized for deployment on Vercel:
+
+1. Import the repository into [Vercel](https://vercel.com/).
+2. Set the **Root Directory** to `frontend`.
+3. Configure Vercel **Environment Variables**:
+   * `NEXT_PUBLIC_API_URL`: `https://symphony-api-production.up.railway.app` (your deployed Railway backend URL)
+4. Click **Deploy**.
+5. Once deployed, update the backend's `ALLOWED_ORIGINS` on Railway to include your production Vercel URL.
+
 
 ---
 
