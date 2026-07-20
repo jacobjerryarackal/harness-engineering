@@ -9,10 +9,11 @@ router = APIRouter(tags=["Shared Core Services & State"])
 def get_memory(c: Container = Depends(get_container)) -> MemoryResponse:
     """Retrieves the current execution traces, active session variables, and project state."""
     return MemoryResponse(
-        traces=c.memory_service._traces,
+        traces=c.memory_service.get_all_traces(),
         context_variables=c.context_service.get_all_variables(),
         project_state=c.state_service.get_all_states()
     )
+
 
 @router.get("/knowledge-graph", response_model=List[TripleModel])
 def get_knowledge_graph(c: Container = Depends(get_container)) -> List[TripleModel]:
