@@ -19,7 +19,12 @@ class MemoryService:
         """Retrieves all execution traces logged for a given run ID."""
         return self._traces.get(run_id, [])
 
+    def get_all_traces(self) -> Dict[str, List[str]]:
+        """Retrieves all stored execution traces across all run IDs."""
+        return dict(self._traces)
+
     def clear_traces(self, run_id: str) -> None:
         """Clears execution traces for a given run ID."""
         if run_id in self._traces:
             del self._traces[run_id]
+
