@@ -1,8 +1,12 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, Dict, List, Optional
 
 class ExecuteRequest(BaseModel):
-    request_text: str = Field(..., description="The engineering goal or task request.", example="Write spec, implement and test a python module")
+    request_text: str = Field(
+        ...,
+        description="The engineering goal or task request.",
+        json_schema_extra={"example": "Write spec, implement and test a python module"}
+    )
     run_id: Optional[str] = Field(None, description="Optional custom unique run identifier.")
 
 class ExecuteResponse(BaseModel):
@@ -21,13 +25,13 @@ class MemoryResponse(BaseModel):
     project_state: Dict[str, Any] = Field(..., description="Project workspace state.")
 
 class TripleModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     subject: str
     predicate: str
     object: str = Field(..., serialization_alias="obj")
     metadata: Dict[str, Any]
 
-    class Config:
-        populate_by_name = True
 
 class FailureModel(BaseModel):
     run_id: str
