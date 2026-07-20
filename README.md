@@ -16,8 +16,6 @@
 
 ---
 
-![Symphony High-Level Architecture](docs/architecture/hld.png)
-
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                            SYMPHONY DEMO PREVIEW                                │
@@ -155,7 +153,6 @@ Symphony coordinates engineering requests through a structured execution pipelin
 ## Screenshots
 
 ### 1. Control Plane Realtime Flow (`/execute`)
-![Realtime Control Plane Graph](docs/architecture/lld.png)
 *Interactive React Flow graph animating live control plane execution across intent analysis, routing, harness delegation, and learning updates.*
 
 ### 2. Semantic Knowledge Graph Inspector (`/knowledge-graph`)
