@@ -2,9 +2,19 @@
 
 import React, { useState } from 'react';
 import { executeGoal, ExecuteResponse, API_BASE_URL } from '@/lib/api';
-import { RealtimeFlow, StepStatus, NodeStateMap } from './RealtimeFlow';
+import { RealtimeFlow, NodeStateMap } from './RealtimeFlow';
 import { RightPanel } from './RightPanel';
-import { Play, Sparkles, AlertCircle, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Play, Sparkles, AlertCircle, RotateCcw } from 'lucide-react';
+
+const DOMAIN_TO_NODE_ID: Record<string, string> = {
+  SPECIFICATION: 'spec-harness',
+  RESEARCH: 'research-harness',
+  ARCHITECTURE: 'arch-harness',
+  ENGINEERING: 'eng-harness',
+  EVALUATION: 'eval-harness',
+  DEPLOYMENT: 'deploy-harness',
+  LEARNING: 'learn-harness',
+};
 
 export const ExecuteView: React.FC = () => {
   const [prompt, setPrompt] = useState('Design and implement a JWT Authentication Service');
@@ -26,25 +36,47 @@ export const ExecuteView: React.FC = () => {
 
     setIsRunning(true);
     setError(null);
+    setResponse(null);
     setLogs(['[System] Initiating Symphony Harness Operating System...']);
     setNodeStates({});
 
     try {
-      // Call API
+      // 1. Invoke Backend Execution API
       const res = await executeGoal({ request_text: prompt });
       setResponse(res);
 
-      // Build dynamic node animation sequence based on selected harnesses
-      const activeHarnessNodeIds = (res.selected_harnesses || []).map(
-        (d) => `${d.toLowerCase()}-harness`
-      );
-
-      const stepsSequence = [
+      // 2. Control Plane Animation Sequence
+      const controlPlaneNodes = [
         'intent-analyzer',
         'harness-router',
         'harness-selector',
         'execution-planner',
-        ...activeHarnessNodeIds,
+      ];
+
+      for (const nodeId of controlPlaneNodes) {
+        setNodeStates((prev) => ({ ...prev, [nodeId]: 'running' }));
+        setLogs((prev) => [...prev, `[Control Plane] Executing ${nodeId}...`]);
+        await new Promise((r) => setTimeout(r, 200));
+        setNodeStates((prev) => ({ ...prev, [nodeId]: res.success ? 'success' : 'failure' }));
+      }
+
+      // 3. Harness Layer Animation Sequence (Only participated harnesses)
+      const selectedDomains = res.selected_harnesses || [];
+      const participatedHarnessNodeIds: string[] = [];
+
+      for (const domain of selectedDomains) {
+        const nodeId = DOMAIN_TO_NODE_ID[domain.toUpperCase()];
+        if (nodeId && !participatedHarnessNodeIds.includes(nodeId)) {
+          participatedHarnessNodeIds.push(nodeId);
+          setNodeStates((prev) => ({ ...prev, [nodeId]: 'running' }));
+          setLogs((prev) => [...prev, `[Harness Layer] Executing ${domain} harness...`]);
+          await new Promise((r) => setTimeout(r, 250));
+          setNodeStates((prev) => ({ ...prev, [nodeId]: res.success ? 'success' : 'failure' }));
+        }
+      }
+
+      // 4. Post-Processing Animation Sequence
+      const postProcessingNodes = [
         'deploy-harness',
         'learn-harness',
         'telemetry-node',
@@ -52,16 +84,21 @@ export const ExecuteView: React.FC = () => {
         'memory-update-node',
       ];
 
-      // Animate node progression
-      for (let i = 0; i < stepsSequence.length; i++) {
-        const nodeId = stepsSequence[i];
-        setNodeStates((prev) => ({ ...prev, [nodeId]: 'running' }));
-        setLogs((prev) => [...prev, `[Control Plane] Step ${i + 1}/${stepsSequence.length}: Executing ${nodeId}...`]);
-        await new Promise((r) => setTimeout(r, 100));
-        setNodeStates((prev) => ({ ...prev, [nodeId]: res.success ? 'success' : 'failure' }));
+      for (const nodeId of postProcessingNodes) {
+        if (!participatedHarnessNodeIds.includes(nodeId)) {
+          setNodeStates((prev) => ({ ...prev, [nodeId]: 'running' }));
+          setLogs((prev) => [...prev, `[Post-Processing] Running ${nodeId}...`]);
+          await new Promise((r) => setTimeout(r, 200));
+          setNodeStates((prev) => ({ ...prev, [nodeId]: res.success ? 'success' : 'failure' }));
+        }
       }
 
-      setLogs((prev) => [...prev, `[System] Execution finished successfully. Artifacts compiled.`]);
+      // 5. Append runtime telemetry logs if present
+      if (res.telemetry_summary?.logs) {
+        setLogs((prev) => [...prev, ...res.telemetry_summary.logs]);
+      }
+
+      setLogs((prev) => [...prev, `[System] Execution finished successfully. All artifacts compiled.`]);
     } catch (err: any) {
       const isNetworkError = err.name === 'TypeError' || err.message?.includes('fetch') || err.message?.includes('Failed to fetch');
       const errorMessage = isNetworkError
@@ -73,7 +110,6 @@ export const ExecuteView: React.FC = () => {
       setIsRunning(false);
     }
   };
-
 
   return (
     <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden h-[calc(100vh-3.5rem)]">
@@ -96,7 +132,6 @@ export const ExecuteView: React.FC = () => {
             ))}
           </div>
         </div>
-
 
         <div className="flex items-center gap-3">
           <input

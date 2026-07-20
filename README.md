@@ -6,6 +6,16 @@
 
 ---
 
+## Live Demo
+
+| Component | URL |
+| :--- | :--- |
+| **Frontend UI** | [https://harness-engineering-murex.vercel.app](https://harness-engineering-murex.vercel.app) |
+| **Backend API** | [https://symphony-os.onrender.com](https://symphony-os.onrender.com) |
+| **Swagger API Docs** | [https://symphony-os.onrender.com/docs](https://symphony-os.onrender.com/docs) |
+
+---
+
 ![Symphony High-Level Architecture](docs/architecture/hld.png)
 
 ```text
@@ -120,21 +130,27 @@ Shared Core Services ◄── Memory Updater ◄── Learning Engine ◄─�
 
 ---
 
-## Live Demo
+## Execution Pipeline
 
-### Production Deployment
+Symphony coordinates engineering requests through a structured execution pipeline. The interactive React Flow visualization mirrors this backend pipeline in real time, animating step progression as work flows through the system.
 
-| Service | URL |
-|----------|-----|
-| Symphony Operating System | https://harness-engineering-murex.vercel.app |
-| Symphony FastAPI Backend | https://symphony-os.onrender.com |
-| Swagger API Documentation | https://symphony-os.onrender.com/docs |
-| Health Endpoint | https://symphony-os.onrender.com/health |
+### Stage Overview
 
-> **Note**
-> The backend is hosted on Render's free tier. The first request after inactivity may take 30–60 seconds while the service wakes up.
+1. **Intent Analyzer**: Parses the user request text to identify core engineering goals and extract required engineering domains.
+2. **Harness Router**: Sorts identified domains into standard software lifecycle order (`SPECIFICATION` → `RESEARCH` → `ARCHITECTURE` → `ENGINEERING` → `EVALUATION`).
+3. **Harness Selector**: Looks up active domain harnesses registered in the `HarnessRegistry`.
+4. **Execution Planner**: Generates a linear strategy plan (`ExecutionPlan`) detailing step IDs and parameters.
+5. **Harness Execution**: Sequentially executes participating engineering harnesses. **Only harnesses selected by the orchestration engine participate and execute**; unselected harnesses remain idle.
+6. **Deployment**: Packages compiled code artifacts and triggers target runtime deployment simulation.
+7. **Learning**: Evaluates execution outcomes, identifies failure events, and formulates knowledge updates.
+8. **Telemetry**: Collects process exit codes, CPU metrics, and execution log streams.
+9. **Knowledge Graph**: Persists extracted facts as semantic triples (`subject-predicate-object`) in the platform knowledge graph.
+10. **Memory Update**: Commits updates to shared memory, failure repositories, and evidence stores to enrich future runs.
+
+> **Real-Time Visualizer Note**: In the frontend React Flow graph, nodes transition from **Gray (Idle)** → **Yellow (Running)** → **Green (Success)** / **Red (Failed)** in real time based strictly on backend API response payload fields (`selected_harnesses` and `execution_plan`). Unused harnesses never animate to green.
 
 ---
+
 
 ## Screenshots
 
