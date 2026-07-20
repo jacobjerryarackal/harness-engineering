@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { executeGoal, ExecuteResponse } from '@/lib/api';
+import { executeGoal, ExecuteResponse, API_BASE_URL } from '@/lib/api';
 import { RealtimeFlow, StepStatus, NodeStateMap } from './RealtimeFlow';
 import { RightPanel } from './RightPanel';
 import { Play, Sparkles, AlertCircle, CheckCircle2, RotateCcw } from 'lucide-react';
@@ -65,7 +65,7 @@ export const ExecuteView: React.FC = () => {
     } catch (err: any) {
       const isNetworkError = err.name === 'TypeError' || err.message?.includes('fetch') || err.message?.includes('Failed to fetch');
       const errorMessage = isNetworkError
-        ? 'Unable to connect to Symphony Control Plane API (http://localhost:8000). Please verify the FastAPI backend server is running.'
+        ? `Unable to connect to Symphony Control Plane API (${API_BASE_URL}). Please verify the backend server is running.`
         : (err.message || 'Execution error');
       setError(errorMessage);
       setLogs((prev) => [...prev, `[System Error] ${errorMessage}`]);
@@ -73,6 +73,7 @@ export const ExecuteView: React.FC = () => {
       setIsRunning(false);
     }
   };
+
 
   return (
     <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden h-[calc(100vh-3.5rem)]">
