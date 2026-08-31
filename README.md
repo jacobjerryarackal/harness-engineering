@@ -75,19 +75,14 @@ To understand **Symphony**, one must first understand three distinct concepts:
 ```mermaid
 flowchart TB
     subgraph ConceptualModel["The Tripartite Agent Model"]
-        M["🧠 Foundation Model / LLM<br/><i>(Reasoning Engine & Semantic Inference)</i>"]
-        H["⚙️ Agent Harness<br/><i>(Context • Tools • Memory • Policies • Verification • Telemetry • State)</i>"]
-        A["🤖 Agent System<br/><i>(Model + Harness Operating as an Autonomous Unit)</i>"]
+        M["Foundation Model / LLM<br/>Reasoning Engine & Inference"]
+        H["Agent Harness<br/>Context, Tools, Memory, Policies, Verification, State"]
+        A["Agent System<br/>Model + Harness Autonomous Unit"]
     end
 
     H -->|Governs & Constrains| M
     M -->|Provides Inference to| A
     H -->|Provides Execution Substrate to| A
-
-    style ConceptualModel fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
-    style M fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#fff
-    style H fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style A fill:#1e293b,stroke:#4ade80,stroke-width:2px,color:#fff
 ```
 
 ### The Three Pillars
@@ -112,7 +107,7 @@ flowchart TB
 
 When developers rely on bare LLMs or naive prompt loops for software engineering, systems break down due to structural limitations:
 
-```
+```text
 ❌ Prompt-Driven Engineering Anti-Pattern
 Prompt ──► Massive Single Context Window ──► Hallucinated Output ──► "Looks Finished" ──► Manual Crash in Production
    ▲                                                                                              │
@@ -120,7 +115,7 @@ Prompt ──► Massive Single Context Window ──► Hallucinated Output ─
 ```
 
 1. **Context Degradation & Prompt Pollution**: Forcing requirements, architecture blueprints, library research, source code, test suites, and deployment scripts into a single prompt window causes attention dilution, lost instructions, and fabricated APIs.
-2. **Open-Loop Execution**: Standard AI tools generate code and immediately terminate. They do not execute artifacts in target runtimes, gather exit codes, or capture operational exceptions.
+2. **Open-Loop Execution**: Traditional AI tools generate code and immediately terminate. They do not execute artifacts in target runtimes, gather exit codes, or capture operational exceptions.
 3. **Transient Organizational Memory**: Learnings, test failures, and debugging breakthroughs vanish the instant an inference session terminates. The next task restarts from zero context.
 4. **Lack of Domain Isolation**: Architectural planning, implementation, quality assurance, and deployment require distinct cognitive and procedural constraints. Combining them into one prompt degrades quality across all four.
 5. **Unverified Claims of Success**: An LLM stating *"I have fixed the issue"* is not proof of resolution. Real engineering requires deterministic execution, test evidence, and policy compliance.
@@ -139,15 +134,15 @@ Symphony replaces monolithic prompt loops with a structured, multi-domain contro
 
 ```mermaid
 flowchart TD
-    subgraph Traditional["❌ Without Harness Engineering"]
+    subgraph Traditional["Without Harness Engineering"]
         direction TB
         T1["Human Prompt"] --> T2["LLM Inference"]
         T2 --> T3["Unverified Code"]
-        T3 --> T4["Claim: 'Looks Finished'"]
+        T3 --> T4["Claim: Looks Finished"]
         T4 --> T5["Manual Production Crash"]
     end
 
-    subgraph SymphonyFlow["✅ With Symphony Harness OS"]
+    subgraph SymphonyFlow["With Symphony Harness OS"]
         direction TB
         S1["User Intent"] --> S2["Domain Routing"]
         S2 --> S3["Context & Policy Injection"]
@@ -156,11 +151,8 @@ flowchart TD
         S5 --> S6["Automated Verification & Evidence Store"]
         S6 --> S7["Production Runtime Simulation"]
         S7 --> S8["Telemetry Collector & Knowledge Extractor"]
-        S8 --> S9["Learning Engine ➔ Knowledge Graph"]
+        S8 --> S9["Learning Engine to Knowledge Graph"]
     end
-
-    style Traditional fill:#1e1b4b,stroke:#f43f5e,stroke-width:2px,color:#fff
-    style SymphonyFlow fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -185,11 +177,11 @@ flowchart TD
 flowchart LR
     subgraph HarnessSubstrate["Symphony Harness Substrate"]
         direction TB
-        CR["Context Assembly<br/><i>(Memory, State, Policies)</i>"]
-        DR["Domain Routing<br/><i>(Canonical SDLC Order)</i>"]
-        EG["Execution Gating<br/><i>(Halt-on-Failure Engine)</i>"]
-        EV["Evidence Storage<br/><i>(Artifacts & Test Diffs)</i>"]
-        LF["Closed-Loop Learning<br/><i>(Telemetry ➔ RDF Triples)</i>"]
+        CR["Context Assembly<br/>Memory, State, Policies"]
+        DR["Domain Routing<br/>Canonical SDLC Order"]
+        EG["Execution Gating<br/>Halt-on-Failure Engine"]
+        EV["Evidence Storage<br/>Artifacts & Test Diffs"]
+        LF["Closed-Loop Learning<br/>Telemetry to RDF Triples"]
     end
 
     Goal["Raw User Goal"] --> DR
@@ -198,8 +190,6 @@ flowchart LR
     EG --> EV
     EV --> LF
     LF -.->|Enriches Future Runs| CR
-
-    style HarnessSubstrate fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -233,220 +223,58 @@ Symphony coordinates incoming goals through an end-to-end lifecycle spanning ana
 
 ```mermaid
 flowchart TD
-    Start(["User submits Goal Request<br/><code>POST /execute</code>"]) --> Intent["1. Intent Analyzer<br/><i>Extracts Domains & Intent Type</i>"]
-    Intent --> Router["2. Harness Router<br/><i>Sorts Domains into Canonical SDLC Order</i>"]
-    Router --> Selector["3. Harness Selector<br/><i>Queries Registry for Active Instances</i>"]
-    Selector --> Planner["4. Execution Planner<br/><i>Builds Linear ExecutionPlan</i>"]
-    Planner --> CtxMgr["5. Context Manager<br/><i>Assembles Session Vars, State, Policies, Triples</i>"]
-    CtxMgr --> ExecEngine["6. Execution Engine<br/><i>Executes Harnesses & Logs Traces</i>"]
+    Start(["User submits Goal Request<br/>POST /execute"]) --> Intent["1. Intent Analyzer<br/>Extracts Domains & Intent Type"]
+    Intent --> Router["2. Harness Router<br/>Sorts Domains into Canonical SDLC Order"]
+    Router --> Selector["3. Harness Selector<br/>Queries Registry for Active Instances"]
+    Selector --> Planner["4. Execution Planner<br/>Builds Linear ExecutionPlan"]
+    Planner --> CtxMgr["5. Context Manager<br/>Assembles Session Vars, State, Policies, Triples"]
+    CtxMgr --> ExecEngine["6. Execution Engine<br/>Executes Harnesses & Logs Traces"]
     
     ExecEngine --> CheckSuccess{"Harness Steps<br/>Succeeded?"}
     CheckSuccess -- No --> LogFail["Log Failure to FailureRepository<br/>& Halt Execution"]
     LogFail --> RespAgg
-    CheckSuccess -- Yes --> RespAgg["7. Response Aggregator<br/><i>Consolidates Generated Files & Test Results</i>"]
+    CheckSuccess -- Yes --> RespAgg["7. Response Aggregator<br/>Consolidates Generated Files & Test Results"]
     
-    RespAgg --> ProdRun["8. Production Runtime Simulation<br/><i>Executes Artifacts & Evaluates Scripts</i>"]
-    ProdRun --> Telem["9. Telemetry Collector<br/><i>Captures Exit Codes, Logs, CPU Metrics</i>"]
-    Telem --> KnowlExt["10. Knowledge Extractor<br/><i>Parses Events (SUCCESS / FAILURE)</i>"]
-    KnowlExt --> LearnEng["11. Learning Engine<br/><i>Generates Memory Update Actions</i>"]
-    LearnEng --> MemUpd["12. Memory Updater<br/><i>Commits to KnowledgeGraph, EvidenceStore, FailureRepo</i>"]
+    RespAgg --> ProdRun["8. Production Runtime Simulation<br/>Executes Artifacts & Evaluates Scripts"]
+    ProdRun --> Telem["9. Telemetry Collector<br/>Captures Exit Codes, Logs, CPU Metrics"]
+    Telem --> KnowlExt["10. Knowledge Extractor<br/>Parses Events: SUCCESS / FAILURE"]
+    KnowlExt --> LearnEng["11. Learning Engine<br/>Generates Memory Update Actions"]
+    LearnEng --> MemUpd["12. Memory Updater<br/>Commits to KnowledgeGraph, EvidenceStore, FailureRepo"]
     MemUpd --> Finish(["Return Unified ExecuteResponse"])
-
-    style Start fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style Finish fill:#1e293b,stroke:#4ade80,stroke-width:2px,color:#fff
-    style CheckSuccess fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
 ```
 
 ---
 
 ## 8. High-Level Design (HLD)
 
-The Symphony architecture is structured into five distinct operational layers:
+The following diagram represents the system-level architecture of Symphony, including the external API layer, control plane, engineering harnesses, shared core services, and runtime feedback loop.
 
-```mermaid
-flowchart TB
-    subgraph Layer1["1. External Interface & API Layer"]
-        CLI["FastAPI Web Layer (app.main)"]
-        UI["Next.js 16 Web Visualizer (frontend)"]
-        Endpoints["REST Routers (/execute, /memory, /knowledge-graph, /telemetry)"]
-    end
+![Symphony High-Level Design](docs/architecture/hld.png)
 
-    subgraph Layer2["2. Symphony Control Plane (core.*)"]
-        Orch["SymphonyOrchestrator"]
-        IA["PatternIntentAnalyzer"]
-        HR["DomainHarnessRouter"]
-        HS["RegistryHarnessSelector"]
-        EP["SequentialExecutionPlanner"]
-        CM["PlatformContextManager"]
-        EE["Engine (Execution Engine)"]
-        RA["ArtifactAggregator"]
-    end
+### 8.1 Architectural Layers & System Boundaries
 
-    subgraph Layer3["3. Engineering Harness Layer (harnesses.*)"]
-        HRG["HarnessRegistry"]
-        H_Spec["SpecificationHarness"]
-        H_Res["ResearchHarness"]
-        H_Arch["ArchitectureHarness"]
-        H_Eng["EngineeringHarness"]
-        H_Eval["EvaluationHarness"]
-        H_Dep["DeploymentHarness"]
-        H_Learn["LearningHarness"]
-    end
+The High-Level Architecture consists of five distinct layers:
 
-    subgraph Layer4["4. Shared Core Services (memory.*)"]
-        M_Mem["MemoryService (Traces)"]
-        M_Ctx["ContextService (Variables)"]
-        M_State["StateService (Workspace)"]
-        M_KG["KnowledgeGraphService (Triples)"]
-        M_Ev["EvidenceStoreService (Evidence)"]
-        M_Fail["FailureRepository (Incidents)"]
-        M_Pol["PolicyEngineService (Compliance)"]
-    end
-
-    subgraph Layer5["5. Production Runtime & Feedback Loop (runtime.*)"]
-        R_Prod["ProductionRuntime"]
-        R_Tel["TelemetryCollector"]
-        R_Ext["KnowledgeExtractor"]
-        R_Learn["LearningEngine"]
-        R_Upd["MemoryUpdater"]
-    end
-
-    UI <--> Endpoints
-    CLI <--> Endpoints
-    Endpoints --> Orch
-    Orch --> IA & HR & HS & EP & CM & EE & RA
-    HS --> HRG
-    HRG --> H_Spec & H_Res & H_Arch & H_Eng & H_Eval & H_Dep & H_Learn
-    CM <--> M_Ctx & M_State & M_KG & M_Pol
-    EE <--> M_Mem & M_Fail
-    Endpoints --> R_Prod
-    R_Prod --> R_Tel --> R_Ext --> R_Learn --> R_Upd
-    R_Upd --> M_KG & M_Fail & M_Ev & M_Pol
-
-    style Layer1 fill:#0f172a,stroke:#64748b,stroke-width:2px,color:#fff
-    style Layer2 fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff
-    style Layer3 fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
-    style Layer4 fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#fff
-    style Layer5 fill:#701a75,stroke:#d946ef,stroke-width:2px,color:#fff
-```
+1. **External Interface & API Layer (`app/`)**: Provides REST endpoints (`/execute`, `/memory`, `/knowledge-graph`, `/failures`, `/telemetry`, `/health`) and serves CORS-enabled responses to the Next.js frontend and external clients.
+2. **Symphony Control Plane (`core/`)**: Coordinates the pipeline through intent analysis, canonical domain routing, harness selection, plan generation, context assembly, execution coordination, and response aggregation.
+3. **Engineering Harness Layer (`harnesses/`)**: Implements single-responsibility engineering capabilities across seven domains: `Specification`, `Research`, `Architecture`, `Engineering`, `Evaluation`, `Deployment`, and `Learning`.
+4. **Shared Core Services Layer (`memory/`)**: Maintains persistent, platform-wide organizational state across seven services: `MemoryService`, `ContextService`, `StateService`, `KnowledgeGraphService`, `EvidenceStoreService`, `FailureRepository`, and `PolicyEngineService`.
+5. **Production Runtime & Feedback Loop (`runtime/`)**: Executes generated artifacts in target runtime environments, collects operational telemetry, extracts failure/success events, synthesizes memory updates, and commits them to shared services.
 
 ---
 
 ## 9. Low-Level Design (LLD)
 
-### Class & Module Design
+The following diagram shows the internal pipeline execution flow of the Symphony Control Plane, detailing how data and execution contexts flow from stage to stage.
 
-```mermaid
-classDiagram
-    class SymphonyOrchestrator {
-        +IntentAnalyzer intent_analyzer
-        +HarnessRouter harness_router
-        +HarnessSelector harness_selector
-        +ExecutionPlanner execution_planner
-        +ContextManager context_manager
-        +ExecutionEngine execution_engine
-        +ResponseAggregator response_aggregator
-        +HarnessRegistry harness_registry
-        +run(request_text: str, run_id: Optional[str]) ExecutionArtifacts
-    }
+![Symphony Low-Level Design](docs/architecture/lld.png)
 
-    class Harness {
-        <<abstract>>
-        +Domain domain*
-        +execute(context: ExecutionContext, parameters: Dict)* HarnessResult
-    }
+### 9.1 Control Plane Pipeline Stages
 
-    class SpecificationHarness {
-        +domain: Domain.SPECIFICATION
-        +execute(context, parameters) HarnessResult
-    }
-    class ResearchHarness {
-        +domain: Domain.RESEARCH
-        +execute(context, parameters) HarnessResult
-    }
-    class ArchitectureHarness {
-        +domain: Domain.ARCHITECTURE
-        +execute(context, parameters) HarnessResult
-    }
-    class EngineeringHarness {
-        +domain: Domain.ENGINEERING
-        +execute(context, parameters) HarnessResult
-    }
-    class EvaluationHarness {
-        +domain: Domain.EVALUATION
-        +execute(context, parameters) HarnessResult
-    }
-    class DeploymentHarness {
-        +domain: Domain.DEPLOYMENT
-        +execute(context, parameters) HarnessResult
-    }
-    class LearningHarness {
-        +domain: Domain.LEARNING
-        +execute(context, parameters) HarnessResult
-    }
-
-    class HarnessRegistry {
-        -Dict~Domain, Harness~ _harnesses
-        +register(harness: Harness) void
-        +get_harness(domain: Domain) Harness
-        +list_harnesses() List~Harness~
-        +clear_registry() void
-    }
-
-    class Engine {
-        -MemoryService _memory_service
-        -FailureRepository _failure_repo
-        +execute_plan(plan, context, registry) List~HarnessResult~
-    }
-
-    class PlatformContextManager {
-        -ContextService _context_service
-        -StateService _state_service
-        -PolicyEngineService _policy_engine
-        -KnowledgeGraphService _knowledge_graph
-        +prepare_context(run_id: str) ExecutionContext
-    }
-
-    class ProductionRuntime {
-        +run_deployment(artifacts: ExecutionArtifacts) Dict
-    }
-
-    class TelemetryCollector {
-        +collect_telemetry(run_id: str, runtime_output: Dict) Dict
-    }
-
-    class KnowledgeExtractor {
-        +extract_knowledge(telemetry_data: Dict) List~Dict~
-    }
-
-    class LearningEngine {
-        +generate_updates(extracted_events: List~Dict~) List~Dict~
-    }
-
-    class MemoryUpdater {
-        +apply_updates(updates, knowledge_graph, policy_engine, failure_repo, evidence_store) void
-    }
-
-    Harness <|-- SpecificationHarness
-    Harness <|-- ResearchHarness
-    Harness <|-- ArchitectureHarness
-    Harness <|-- EngineeringHarness
-    Harness <|-- EvaluationHarness
-    Harness <|-- DeploymentHarness
-    Harness <|-- LearningHarness
-
-    SymphonyOrchestrator --> HarnessRegistry
-    SymphonyOrchestrator --> Engine
-    SymphonyOrchestrator --> PlatformContextManager
-    HarnessRegistry o-- Harness
-```
-
-### Seven Control Plane Pipeline Stages
-
-| Stage | Implementation Class | Input | Output | Invariant / Behavior |
+| Pipeline Stage | Implementation Class | Input | Output | Invariant / Behavior |
 | :--- | :--- | :--- | :--- | :--- |
 | **1. Intent Analysis** | `core.intent_analyzer.PatternIntentAnalyzer` | `request_text: str` | `Intent` | Maps keywords (`spec`, `research`, `code`, `test`, etc.) to `Domain` enums. |
-| **2. Harness Routing** | `core.harness_router.DomainHarnessRouter` | `Intent` | `List[Domain]` | Sorts requested domains into canonical lifecycle order. |
+| **2. Harness Routing** | `core.harness_router.DomainHarnessRouter` | `Intent` | `List[Domain]` | Sorts requested domains into canonical SDLC lifecycle order. |
 | **3. Harness Selection** | `core.harness_selector.RegistryHarnessSelector` | `List[Domain]`, `HarnessRegistry` | `List[Harness]` | Retrieves instantiated harness objects matching the required domains. |
 | **4. Execution Planning** | `core.execution_planner.SequentialExecutionPlanner` | `run_id: str`, `List[Harness]` | `ExecutionPlan` | Constructs sequential `ExecutionStep` instances with unique step IDs. |
 | **5. Context Assembly** | `core.context_manager.PlatformContextManager` | `run_id: str` | `ExecutionContext` | Hydrates active session variables, state dictionary, policies, and RDF triples. |
@@ -518,18 +346,18 @@ Context in Symphony is actively managed through progressive assembly rather than
 ```mermaid
 flowchart LR
     subgraph MemorySources["Shared Core Services Layer"]
-        CV["ContextService<br/><i>(Session Variables)</i>"]
-        SS["StateService<br/><i>(Workspace State)</i>"]
-        PE["PolicyEngineService<br/><i>(Compliance Rules)</i>"]
-        KG["KnowledgeGraphService<br/><i>(Semantic Triples)</i>"]
+        CV["ContextService<br/>Session Variables"]
+        SS["StateService<br/>Workspace State"]
+        PE["PolicyEngineService<br/>Compliance Rules"]
+        KG["KnowledgeGraphService<br/>Semantic Triples"]
     end
 
     subgraph Assembly["Context Assembly"]
-        PCM["PlatformContextManager<br/><code>prepare_context(run_id)</code>"]
+        PCM["PlatformContextManager<br/>prepare_context(run_id)"]
     end
 
     subgraph ContextObject["ExecutionContext Substrate"]
-        EC["ExecutionContext<br/>• run_id<br/>• variables: Dict<br/>• state: Dict<br/>• policies: List<br/>• knowledge_triples: List"]
+        EC["ExecutionContext<br/>• run_id<br/>• variables<br/>• state<br/>• policies<br/>• knowledge_triples"]
     end
 
     CV --> PCM
@@ -538,10 +366,6 @@ flowchart LR
     KG --> PCM
     PCM --> EC
     EC --> HarnessExec["Active Domain Harness Execution"]
-
-    style MemorySources fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style Assembly fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
-    style ContextObject fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
 ```
 
 ### Context Isolation & Variable Propagation
@@ -619,10 +443,6 @@ flowchart TD
     ScanScripts --> EvalScript{"Script contains 'error' or 'raise'?"}
     EvalScript -- Yes --> Crash["Simulated Crash Exception<br/>Status: CRASHED<br/>Exit Code: 127<br/>Metrics: 85.5% CPU"]
     EvalScript -- No --> Stable["All Scripts Pass<br/>Status: RUNNING<br/>Exit Code: 0<br/>Metrics: 12.4% CPU"]
-
-    style Artifacts fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style Crash fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff
-    style Stable fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -635,20 +455,18 @@ All orchestrator components and API endpoints access shared state through seven 
 flowchart LR
     subgraph Container["Singleton Dependency Container (app.dependencies.Container)"]
         direction TB
-        MS["MemoryService<br/><i>Execution Traces & Step Logs</i>"]
-        CS["ContextService<br/><i>Key-Value Session Variables</i>"]
-        SS["StateService<br/><i>Workspace Component State</i>"]
-        KG["KnowledgeGraphService<br/><i>RDF Subject-Predicate-Object Triples</i>"]
-        ES["EvidenceStoreService<br/><i>Immutable Hard Evidence Store</i>"]
-        FR["FailureRepository<br/><i>Crash Logs & Post-Mortem Records</i>"]
-        PE["PolicyEngineService<br/><i>Engineering Compliance Predicates</i>"]
+        MS["MemoryService<br/>Execution Traces & Step Logs"]
+        CS["ContextService<br/>Key-Value Session Variables"]
+        SS["StateService<br/>Workspace Component State"]
+        KG["KnowledgeGraphService<br/>RDF Subject-Predicate-Object Triples"]
+        ES["EvidenceStoreService<br/>Immutable Hard Evidence Store"]
+        FR["FailureRepository<br/>Crash Logs & Post-Mortem Records"]
+        PE["PolicyEngineService<br/>Engineering Compliance Predicates"]
     end
 
     API["FastAPI Endpoints"] --> Container
     Orchestrator["Symphony Control Plane"] --> Container
     RuntimeLoop["Production Feedback Loop"] --> Container
-
-    style Container fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
 ```
 
 ### Service Specifications
@@ -674,15 +492,7 @@ flowchart LR
     TC --> KE["Knowledge Extractor"]
     KE --> LE["Learning Engine"]
     LE --> MU["Memory Updater"]
-    MU --> SCS["Shared Core Services<br/><i>(Knowledge Graph & Failure Repo)</i>"]
-
-    style Art fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
-    style PR fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
-    style TC fill:#0f766e,stroke:#2dd4bf,stroke-width:2px,color:#fff
-    style KE fill:#c2410c,stroke:#fb923c,stroke-width:2px,color:#fff
-    style LE fill:#7e22ce,stroke:#c084fc,stroke-width:2px,color:#fff
-    style MU fill:#be185d,stroke:#f472b6,stroke-width:2px,color:#fff
-    style SCS fill:#065f46,stroke:#34d399,stroke-width:2px,color:#fff
+    MU --> SCS["Shared Core Services<br/>Knowledge Graph & Failure Repo"]
 ```
 
 ### Telemetry to Knowledge Transformation
@@ -712,11 +522,6 @@ flowchart TD
     G3 --> G4{"Runtime Gate<br/>ProductionRuntime Exit Code == 0?"}
     G4 -- Fail --> LearnFail["Extract FAILURE_EVENT<br/>Update Knowledge Graph"]
     G4 -- Pass --> LearnPass["Extract SUCCESS_EVENT<br/>Commit Stable Triple"]
-
-    style Step fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style Halt fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff
-    style LearnFail fill:#701a75,stroke:#e879f9,stroke-width:2px,color:#fff
-    style LearnPass fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -736,8 +541,6 @@ flowchart TD
         D5 --> D6["6. DEPLOYMENT"]
         D6 --> D7["7. LEARNING"]
     end
-
-    style DomainOrder fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
 ```
 
 ### Dependency Invariants
@@ -789,22 +592,18 @@ flowchart TD
     end
 
     subgraph DeployBackend["Backend Hosting: Render"]
-        Render["Uvicorn ASGI Server<br/><code>https://symphony-os.onrender.com</code>"]
-        Swagger["FastAPI Swagger UI<br/><code>/docs</code>"]
+        Render["Uvicorn ASGI Server<br/>https://symphony-os.onrender.com"]
+        Swagger["FastAPI Swagger UI<br/>/docs"]
     end
 
     subgraph DeployFrontend["Frontend Hosting: Vercel"]
-        Vercel["Next.js 16 SSR & Static Edge<br/><code>https://harness-engineering-murex.vercel.app</code>"]
+        Vercel["Next.js 16 SSR & Static Edge<br/>https://harness-engineering-murex.vercel.app"]
         ReactFlowUI["React Flow DAG Visualizer"]
     end
 
     Source -->|Auto Deploy / Git Push| Render
     Source -->|Auto Deploy / Git Push| Vercel
     Vercel <-->|CORS REST API Requests| Render
-
-    style Source fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
-    style DeployBackend fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
-    style DeployFrontend fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -884,17 +683,13 @@ flowchart TD
     Err["Exception Encountered during ExecutionStep"] --> Trap["Engine Traps Exception"]
     Trap --> LogMem["MemoryService.log_trace(run_id, error_msg)"]
     LogMem --> LogFail["FailureRepository.log_failure(run_id, component, error_msg)"]
-    LogFail --> CreateResult["Create HarnessResult(success=False, error_message=...)"]
+    LogFail --> CreateResult["Create HarnessResult(success=False)"]
     CreateResult --> Halt["Halt ExecutionPlan Loop"]
     Halt --> ReturnPartial["Return Partial Artifacts with success=False"]
     ReturnPartial --> RuntimeEval["ProductionRuntime marks status: FAILED"]
     RuntimeEval --> ExtFail["KnowledgeExtractor creates FAILURE_EVENT"]
-    ExtFail --> LearnFail["LearningEngine creates ADD_TRIPLE (encountered_failure)"]
+    ExtFail --> LearnFail["LearningEngine creates ADD_TRIPLE"]
     LearnFail --> ApplyMem["MemoryUpdater persists failure to KnowledgeGraph"]
-
-    style Err fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff
-    style Trap fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#fff
-    style ApplyMem fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -918,13 +713,11 @@ Symphony provides complete visibility into system operations across four dedicat
 ```mermaid
 flowchart LR
     subgraph ObservabilitySurfaces["Observability & Inspection Endpoints"]
-        E1["<code>GET /memory</code><br/>Traces, Session Variables, Workspace State"]
-        E2["<code>GET /knowledge-graph</code><br/>Semantic Triples & Metadata"]
-        E3["<code>GET /failures</code><br/>Component Failures & Stack Traces"]
-        E4["<code>GET /telemetry</code><br/>Exit Codes, Hardware Metrics, Runtime Logs"]
+        E1["GET /memory<br/>Traces, Session Variables, Workspace State"]
+        E2["GET /knowledge-graph<br/>Semantic Triples & Metadata"]
+        E3["GET /failures<br/>Component Failures & Stack Traces"]
+        E4["GET /telemetry<br/>Exit Codes, Hardware Metrics, Runtime Logs"]
     end
-
-    style ObservabilitySurfaces fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -1293,15 +1086,13 @@ The Next.js 16 frontend provides an interactive engineering cockpit with dark-mo
 ```mermaid
 flowchart TD
     subgraph UIViews["Frontend Navigation Tabs (src/components/)"]
-        V1["🚀 Execute View<br/><i>(Intent Input, Real-Time React Flow DAG Animation)</i>"]
-        V2["📊 Dashboard View<br/><i>(Platform Metrics, Execution Summaries, Health)</i>"]
-        V3["🧠 Knowledge Graph View<br/><i>(Semantic RDF Triples Browser & Filters)</i>"]
-        V4["💾 Memory View<br/><i>(Session Variables, Traces, Workspace State)</i>"]
-        V5["📈 Telemetry View<br/><i>(Exit Codes, Hardware Graphs, Runtime Logs)</i>"]
-        V6["⚠️ Failures View<br/><i>(Failure Repository Post-Mortems & Crashes)</i>"]
+        V1["Execute View<br/>Intent Input, Real-Time React Flow DAG Animation"]
+        V2["Dashboard View<br/>Platform Metrics, Execution Summaries, Health"]
+        V3["Knowledge Graph View<br/>Semantic RDF Triples Browser & Filters"]
+        V4["Memory View<br/>Session Variables, Traces, Workspace State"]
+        V5["Telemetry View<br/>Exit Codes, Hardware Graphs, Runtime Logs"]
+        V6["Failures View<br/>Failure Repository Post-Mortems & Crashes"]
     end
-
-    style UIViews fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#fff
 ```
 
 ### Real-Time Visualizer State Transitions
