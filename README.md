@@ -1,364 +1,1102 @@
-# Symphony
+# 🎼 Symphony: Autonomous Harness Operating System
 
-**Autonomous Harness Operating System**
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Pydantic v2](https://img.shields.io/badge/Pydantic-v2.0+-E92063.svg?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-black.svg?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![React Flow](https://img.shields.io/badge/React_Flow-12-FF0072.svg)](https://reactflow.dev/)
+[![Pytest Tests](https://img.shields.io/badge/Tests-28%20Passed-brightgreen.svg)](tests/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A model-agnostic engineering orchestration platform that coordinates specialized engineering harnesses, shares platform-wide organizational memory, and continuously improves through closed-loop production telemetry.
-
----
-
-## Live Demo
-
-| Component | URL |
-| :--- | :--- |
-| **Frontend UI** | [https://harness-engineering-murex.vercel.app](https://harness-engineering-murex.vercel.app) |
-| **Backend API** | [https://symphony-os.onrender.com](https://symphony-os.onrender.com) |
-| **Swagger API Docs** | [https://symphony-os.onrender.com/docs](https://symphony-os.onrender.com/docs) |
+> **A model-agnostic engineering orchestration control plane that coordinates specialized domain harnesses, maintains persistent platform-wide organizational memory, and closes the operational loop through continuous runtime telemetry and semantic knowledge extraction.**
 
 ---
 
-```text
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                            SYMPHONY DEMO PREVIEW                                │
-│                                                                                  │
-│   [ Intent Input ] ──► [ Control Plane ] ──► [ Harness Pipeline ] ──► [ Learn ] │
-│                                                                                  │
-│   (See interactive demo at http://localhost:3000 during live server execution)   │
-└──────────────────────────────────────────────────────────────────────────────────┘
+## 🌐 Live Deployments & Interactive Links
+
+| Component | Target Environment | URL |
+| :--- | :--- | :--- |
+| **Frontend Visualizer** | Vercel (Next.js 16 + React Flow) | [https://harness-engineering-murex.vercel.app](https://harness-engineering-murex.vercel.app) |
+| **Backend Control Plane** | Render (FastAPI + Uvicorn) | [https://symphony-os.onrender.com](https://symphony-os.onrender.com) |
+| **Interactive API Docs** | OpenAPI / Swagger UI | [https://symphony-os.onrender.com/docs](https://symphony-os.onrender.com/docs) |
+| **Alternative API Docs** | ReDoc Interface | [https://symphony-os.onrender.com/redoc](https://symphony-os.onrender.com/redoc) |
+| **Source Repository** | GitHub | [jacobjerryarackal/harness-engineering](https://github.com/jacobjerryarackal/harness-engineering) |
+
+---
+
+## 📑 Table of Contents
+
+1. [Executive Summary & Core Distinctions](#1-executive-summary--core-distinctions)
+2. [Why This Problem? The Limits of Bare LLMs](#2-why-this-problem-the-limits-of-bare-llms)
+3. [What Problem Does Symphony Solve?](#3-what-problem-does-symphony-solve)
+4. [What is Harness Engineering?](#4-what-is-harness-engineering)
+5. [Project Philosophy & Core Principles](#5-project-philosophy--core-principles)
+6. [Inspirations & Public Research](#6-inspirations--public-research)
+7. [System Overview & How It Works](#7-system-overview--how-it-works)
+8. [High-Level Design (HLD)](#8-high-level-design-hld)
+9. [Low-Level Design (LLD)](#9-low-level-design-lld)
+10. [End-to-End Working & Sequence Flow](#10-end-to-end-working--sequence-flow)
+11. [Context Engineering](#11-context-engineering)
+12. [The Engineering Harness Layer](#12-the-engineering-harness-layer)
+13. [Hooks, Policies, & Guardrails](#13-hooks-policies--guardrails)
+14. [Production Runtime & Tooling Simulation](#14-production-runtime--tooling-simulation)
+15. [Shared Core Services & State Management](#15-shared-core-services--state-management)
+16. [Closed-Loop Telemetry & Learning Engine](#16-closed-loop-telemetry--learning-engine)
+17. [Verification Architecture & Quality Gates](#17-verification-architecture--quality-gates)
+18. [Architecture Enforcement](#18-architecture-enforcement)
+19. [Testing Strategy](#19-testing-strategy)
+20. [CI/CD & Deployment Topology](#20-cicd--deployment-topology)
+21. [Technology Stack](#21-technology-stack)
+22. [Why Did We Choose This Tech Stack?](#22-why-did-we-choose-this-tech-stack)
+23. [Architectural Decision Records (ADRs)](#23-architectural-decision-records-adrs)
+24. [Failure Handling & Recovery](#24-failure-handling--recovery)
+25. [Security & Guardrails](#25-security--guardrails)
+26. [Observability & Telemetry](#26-observability--telemetry)
+27. [Project Structure](#27-project-structure)
+28. [Local Development & Quick Start](#28-local-development--quick-start)
+29. [API Reference & Endpoint Specification](#29-api-reference--endpoint-specification)
+30. [Frontend Control Plane Dashboard](#30-frontend-control-plane-dashboard)
+31. [Before vs. After Comparison](#31-before-vs-after-comparison)
+32. [Limitations](#32-limitations)
+33. [Future Roadmap](#33-future-roadmap)
+34. [Engineering Lessons](#34-engineering-lessons)
+35. [References & Citations](#35-references--citations)
+36. [License](#36-license)
+
+---
+
+## 1. Executive Summary & Core Distinctions
+
+Modern software engineering with artificial intelligence often conflates raw reasoning capability with end-to-end software delivery. In reality, a foundation model alone cannot guarantee reliable software outcomes. 
+
+To understand **Symphony**, one must first understand three distinct concepts:
+
+```mermaid
+flowchart TB
+    subgraph ConceptualModel["The Tripartite Agent Model"]
+        M["🧠 Foundation Model / LLM<br/><i>(Reasoning Engine & Semantic Inference)</i>"]
+        H["⚙️ Agent Harness<br/><i>(Context • Tools • Memory • Policies • Verification • Telemetry • State)</i>"]
+        A["🤖 Agent System<br/><i>(Model + Harness Operating as an Autonomous Unit)</i>"]
+    end
+
+    H -->|Governs & Constrains| M
+    M -->|Provides Inference to| A
+    H -->|Provides Execution Substrate to| A
+
+    style ConceptualModel fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style M fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#fff
+    style H fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style A fill:#1e293b,stroke:#4ade80,stroke-width:2px,color:#fff
 ```
 
-| Feature | Description |
-| :--- | :--- |
-| **Harness-First Orchestration** | Replaces monolithic coding prompts with single-responsibility engineering harnesses. |
-| **Shared Core Services** | Maintains organizational state, session variables, policies, facts, and evidence across runs. |
-| **Closed-Loop Feedback** | Converts production runtime failures into structured knowledge triples (*"Loss becomes Information"*). |
-| **Full Stack Control Plane** | High-performance FastAPI backend paired with an interactive Next.js / React Flow visualizer. |
+### The Three Pillars
 
-> **IMPORTANT: Orchestration System Scope**  
-> Symphony is an **Autonomous Harness Operating System** designed for engineering orchestration, planning, execution coordination, telemetry, and memory. It intentionally does **NOT** generate application code or act as an LLM code generator. Instead, it produces **runtime orchestration artifacts** (Execution Plans, Harness Selection Registries, Execution Summaries, Runtime Telemetry Reports, Learning Post-Mortems, and Semantic Knowledge Triples) representing the actual operational state of the Control Plane.
+1. **The Model (`LLM`)**: The underlying neural network (e.g., GPT-4, Claude 3.5, Gemini 1.5). It provides statistical pattern matching, natural language parsing, and code syntax synthesis. It has no persistent memory across sessions, no native filesystem access, no awareness of organizational rules, and no mechanism to verify its own correctness.
+2. **The Harness (`Operating Environment`)**: The surrounding deterministic software harness that controls:
+   - What context the model sees (and when).
+   - What tools and domain capabilities are made available.
+   - What organizational policies, types, and architectural constraints are enforced.
+   - How outputs are tested, validated, and converted into hard evidence.
+   - How runtime failures are captured, analyzed, and persisted as organizational memory.
+3. **The Agent (`System Outcome`)**: The resulting entity formed by `Model + Harness`. An agent's reliability is bounded not by model intelligence alone, but by the rigor of its harness.
 
----
-
-
-## Why Symphony?
-
-### The Problem with Monolithic Coding Agents
-
-Modern Large Language Models (LLMs) excel at isolated code generation, but struggle with comprehensive software lifecycle execution. 
-
-Standard coding agents suffer from fundamental structural limitations:
-
-1. **Context Degradation & Prompt Pollution**: Attempting to specify requirements, research libraries, design architecture, generate code, write tests, and configure deployments in a single prompt window leads to context overflow and hallucinated APIs.
-2. **Open-Loop Execution**: Traditional AI tools generate code and terminate. They do not run the generated code in target runtimes, collect operational telemetry, or learn from production failures.
-3. **Transient Knowledge**: Engineering learnings, test outcomes, and failure post-mortems disappear when a chat session ends. Every new request restarts reasoning from scratch.
-4. **Lack of Domain Isolation**: Code generation logic is coupled with architectural planning and test verification, preventing independent optimization of individual software engineering disciplines.
-
-### The Solution: An Autonomous Harness Operating System
-
-Symphony decouples engineering intent orchestration from underlying LLM inference. It introduces a **Control Plane** that routes intent through specialized **Engineering Harnesses**, enforces organizational policies, records evidence, and applies closed-loop production feedback to shared memory services.
+> **Crucial Architectural Scope**  
+> Symphony is an **Autonomous Harness Operating System** designed for engineering orchestration, domain routing, context assembly, telemetry capture, and closed-loop learning. It intentionally decouples control plane orchestration from model inference. Instead of generating ungrounded code in a single prompt, Symphony produces verifiable **runtime orchestration artifacts** (Execution Plans, Domain Artifacts, Telemetry Reports, Failure Post-Mortems, and Semantic Knowledge Triples).
 
 ---
 
-## Architecture
+## 2. Why This Problem? The Limits of Bare LLMs
 
-### High-Level Design (HLD)
+### The Failure Modes of Monolithic AI Coding
 
-![High-Level Design](docs/architecture/hld.png)
+When developers rely on bare LLMs or naive prompt loops for software engineering, systems break down due to structural limitations:
 
-The High-Level Architecture consists of five core layers:
-
-* **External World**: Captures raw engineering requests, requirements, business constraints, and telemetry signals.
-* **Symphony Control Plane (`core.orchestrator.SymphonyOrchestrator`)**: Coordinates pipeline execution without directly generating raw software artifacts.
-* **Harness Layer (`harnesses.*`)**: Domain-specific harnesses performing specialized engineering tasks.
-* **Shared Core Services (`memory.*`)**: Persistent platform services providing shared intelligence across all executions.
-* **Production Runtime (`runtime.*`)**: Executes generated artifacts, captures operational telemetry, and drives continuous learning.
-
-### Low-Level Design (LLD)
-
-![Low-Level Design](docs/architecture/lld.png)
-
-The Control Plane executes incoming goals through a deterministic 7-stage pipeline:
-
-```text
-Incoming Goal Request
-        │
-        ▼
-[ 1. Intent Analyzer ] ─── Parses intent type and identifies required engineering domains
-        │
-        ▼
-[ 2. Harness Router ] ──── Orders domains into standard engineering pipeline sequence
-        │
-        ▼
-[ 3. Harness Selector ] ── Queries Harness Registry for active domain implementations
-        │
-        ▼
-[ 4. Execution Planner ] ─ Builds linear strategy plan (ExecutionPlan)
-        │
-        ▼
-[ 5. Context Manager ] ─── Assembles session variables, workspace state, policies & graph facts
-        │
-        ▼
-[ 6. Execution Engine ] ── Sequentially executes harnesses, logs traces & propagates state
-        │
-        ▼
-[ 7. Response Aggregator ] Consolidates generated files, test logs & deployment statuses
+```
+❌ Prompt-Driven Engineering Anti-Pattern
+Prompt ──► Massive Single Context Window ──► Hallucinated Output ──► "Looks Finished" ──► Manual Crash in Production
+   ▲                                                                                              │
+   └──────────────────────────────── Ephemeral / No Memory ───────────────────────────────────────┘
 ```
 
-### Component Architecture
+1. **Context Degradation & Prompt Pollution**: Forcing requirements, architecture blueprints, library research, source code, test suites, and deployment scripts into a single prompt window causes attention dilution, lost instructions, and fabricated APIs.
+2. **Open-Loop Execution**: Standard AI tools generate code and immediately terminate. They do not execute artifacts in target runtimes, gather exit codes, or capture operational exceptions.
+3. **Transient Organizational Memory**: Learnings, test failures, and debugging breakthroughs vanish the instant an inference session terminates. The next task restarts from zero context.
+4. **Lack of Domain Isolation**: Architectural planning, implementation, quality assurance, and deployment require distinct cognitive and procedural constraints. Combining them into one prompt degrades quality across all four.
+5. **Unverified Claims of Success**: An LLM stating *"I have fixed the issue"* is not proof of resolution. Real engineering requires deterministic execution, test evidence, and policy compliance.
 
-* **Symphony Control Plane**: Decouples orchestration from LLM providers, ensuring model-agnostic execution.
-* **Harness Registry (`harnesses.registry.HarnessRegistry`)**: Maintains registered capabilities across 7 engineering domains:
-  1. `SpecificationHarness`: Acceptance criteria & requirements generation
-  2. `ResearchHarness`: Technical pattern & dependency investigation
-  3. `ArchitectureHarness`: System blueprint & component schema design
-  4. `EngineeringHarness`: Production application code generation
-  5. `EvaluationHarness`: Automated test suite execution & verification
-  6. `DeploymentHarness`: Release packaging & runtime deployment
-  7. `LearningHarness`: Post-mortem failure analysis & update generation
-* **Shared Core Services**: 7 platform memory components accessible by all harnesses:
-  - `MemoryService`: Execution traces and step logs
-  - `ContextService`: Active session variables
-  - `StateService`: Workspace component state
-  - `KnowledgeGraphService`: Semantic RDF-style facts (`subject-predicate-object`)
-  - `EvidenceStoreService`: Hard evidence storage (test outputs, code artifacts)
-  - `FailureRepository`: Failure incidents and stack traces
-  - `PolicyEngineService`: Engineering compliance rules
-* **Runtime Learning Loop**: Converts operational feedback into organizational memory:
+### Why Prompting Alone Is Insufficient
 
-```text
-Execution Artifacts ──► Production Runtime ──► Telemetry Collector ──► Knowledge Extractor
-                                                                             │
-Shared Core Services ◄── Memory Updater ◄── Learning Engine ◄────────────────┘
+The solution is not simply to write longer prompts or wait for larger models. The goal is to **engineer the deterministic environment in which the model operates**.
+
+$$\text{Reliable Engineering System} = \text{Reasoning Engine} + \text{Context Routing} + \text{Domain Specialization} + \text{Deterministic Verification} + \text{Closed-Loop Memory}$$
+
+---
+
+## 3. What Problem Does Symphony Solve?
+
+Symphony replaces monolithic prompt loops with a structured, multi-domain control plane that enforces deterministic verification and continuous closed-loop learning.
+
+```mermaid
+flowchart TD
+    subgraph Traditional["❌ Without Harness Engineering"]
+        direction TB
+        T1["Human Prompt"] --> T2["LLM Inference"]
+        T2 --> T3["Unverified Code"]
+        T3 --> T4["Claim: 'Looks Finished'"]
+        T4 --> T5["Manual Production Crash"]
+    end
+
+    subgraph SymphonyFlow["✅ With Symphony Harness OS"]
+        direction TB
+        S1["User Intent"] --> S2["Domain Routing"]
+        S2 --> S3["Context & Policy Injection"]
+        S3 --> S4["Specialized Domain Harnesses"]
+        S4 --> S5["Deterministic Execution Engine"]
+        S5 --> S6["Automated Verification & Evidence Store"]
+        S6 --> S7["Production Runtime Simulation"]
+        S7 --> S8["Telemetry Collector & Knowledge Extractor"]
+        S8 --> S9["Learning Engine ➔ Knowledge Graph"]
+    end
+
+    style Traditional fill:#1e1b4b,stroke:#f43f5e,stroke-width:2px,color:#fff
+    style SymphonyFlow fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
 ```
 
 ---
 
-## Execution Pipeline
+## 4. What is Harness Engineering?
 
-Symphony coordinates engineering requests through a structured execution pipeline. The interactive React Flow visualization mirrors this backend pipeline in real time, animating step progression as work flows through the system.
+**Harness Engineering** is the discipline of designing, implementing, and maintaining the software environment that surrounds, constrains, guides, and verifies autonomous AI agents.
 
-### Stage Overview
+### The Anatomy of an Engineering Harness
 
-1. **Intent Analyzer**: Parses the user request text to identify core engineering goals and extract required engineering domains.
-2. **Harness Router**: Sorts identified domains into standard software lifecycle order (`SPECIFICATION` → `RESEARCH` → `ARCHITECTURE` → `ENGINEERING` → `EVALUATION`).
-3. **Harness Selector**: Looks up active domain harnesses registered in the `HarnessRegistry`.
-4. **Execution Planner**: Generates a linear strategy plan (`ExecutionPlan`) detailing step IDs and parameters.
-5. **Harness Execution**: Sequentially executes participating engineering harnesses. **Only harnesses selected by the orchestration engine participate and execute**; unselected harnesses remain idle.
-6. **Deployment**: Packages compiled code artifacts and triggers target runtime deployment simulation.
-7. **Learning**: Evaluates execution outcomes, identifies failure events, and formulates knowledge updates.
-8. **Telemetry**: Collects process exit codes, CPU metrics, and execution log streams.
-9. **Knowledge Graph**: Persists extracted facts as semantic triples (`subject-predicate-object`) in the platform knowledge graph.
-10. **Memory Update**: Commits updates to shared memory, failure repositories, and evidence stores to enrich future runs.
+| Component | Responsibility in Symphony | Implementation Class |
+| :--- | :--- | :--- |
+| **Intent Routing** | Analyzes natural language goals and extracts required engineering domains. | `core.intent_analyzer.PatternIntentAnalyzer` |
+| **Canonical Ordering** | Enforces chronological software development lifecycle phases. | `core.harness_router.DomainHarnessRouter` |
+| **Domain Specialization** | Isolates single responsibilities (Spec, Arch, Eng, Eval, Deploy, Learn). | `harnesses.*` |
+| **Context Assembly** | Dynamically hydrates execution state from policies, session vars, and RDF facts. | `core.context_manager.PlatformContextManager` |
+| **Execution Gating** | Sequentially executes steps; immediately halts on unhandled errors. | `core.execution_engine.Engine` |
+| **Evidence Validation** | Captures verifiable outputs (artifacts, test runs, exit codes) into an immutable store. | `memory.evidence_store.EvidenceStoreService` |
+| **Closed-Loop Feedback** | Ingests production crash telemetry and updates platform memory (*"Loss becomes Information"*). | `runtime.*` |
 
-> **Real-Time Visualizer Note**: In the frontend React Flow graph, nodes transition from **Gray (Idle)** → **Yellow (Running)** → **Green (Success)** / **Red (Failed)** in real time based strictly on backend API response payload fields (`selected_harnesses` and `execution_plan`). Unused harnesses never animate to green.
+```mermaid
+flowchart LR
+    subgraph HarnessSubstrate["Symphony Harness Substrate"]
+        direction TB
+        CR["Context Assembly<br/><i>(Memory, State, Policies)</i>"]
+        DR["Domain Routing<br/><i>(Canonical SDLC Order)</i>"]
+        EG["Execution Gating<br/><i>(Halt-on-Failure Engine)</i>"]
+        EV["Evidence Storage<br/><i>(Artifacts & Test Diffs)</i>"]
+        LF["Closed-Loop Learning<br/><i>(Telemetry ➔ RDF Triples)</i>"]
+    end
 
----
+    Goal["Raw User Goal"] --> DR
+    DR --> CR
+    CR --> EG
+    EG --> EV
+    EV --> LF
+    LF -.->|Enriches Future Runs| CR
 
-
-## Screenshots
-
-### 1. Control Plane Realtime Flow (`/execute`)
-*Interactive React Flow graph animating live control plane execution across intent analysis, routing, harness delegation, and learning updates.*
-
-### 2. Semantic Knowledge Graph Inspector (`/knowledge-graph`)
-*Inspects stored semantic facts and triples (`subject-predicate-object`) accumulated across executions.*
-
-### 3. Production Telemetry & Metrics (`/telemetry`)
-*Monitors runtime execution status, exit codes, CPU utilization metrics, and operational logs.*
-
-### 4. Shared Memory & Context Inspector (`/memory`)
-*Displays active session variables, project workspace state, and execution trace history.*
-
----
-
-## Technical Features
-
-* **Model Agnostic**: Pure Python orchestrator independent of specific model providers or vendor APIs.
-* **Harness-First Design**: Modular harness architecture enforcing single-responsibility engineering standards.
-* **Closed-Loop Learning**: Automated translation of runtime failure logs into persistent Knowledge Graph triples.
-* **FastAPI Backend**: Asynchronous REST API with Pydantic V2 schemas and structured error handling.
-* **Next.js 15 Frontend**: Modern web dashboard with dark-mode aesthetic, live React Flow graphs, and tabbed view state.
-* **React Flow Visualizer**: Real-time visual tracking of Control Plane node states (`running`, `success`, `failure`).
-* **Structured Telemetry**: Full capture of execution logs, process exit codes, and operational metrics.
-* **Semantic Knowledge Graph**: In-memory RDF triple store with pattern querying capabilities.
+    style HarnessSubstrate fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+```
 
 ---
 
-## Repository Structure
+## 5. Project Philosophy & Core Principles
+
+Every architectural layer in Symphony reflects concrete engineering principles implemented directly in source code:
+
+1. **Model-Agnostic Control Plane**: Pure Python orchestration logic (`core/orchestrator.py`) decoupled from proprietary LLM API SDKs.
+2. **Single-Responsibility Domain Isolation**: Capabilities are separated into distinct domain classes (`harnesses/`) inheriting from `Harness`.
+3. **Progressive Context Disclosure**: Instead of flooding context with raw repository dumps, `PlatformContextManager` injects only active session variables, applicable policy rules, and relevant RDF triples.
+4. **Deterministic Quality Gates**: The execution engine halts execution immediately when a harness fails or an assertion fails (`Engine.execute_plan()`).
+5. **Evidence Over Assertion**: An agent's execution is not complete without concrete artifacts registered in `EvidenceStoreService`.
+6. **Loss Becomes Information**: Operational failures and runtime exceptions are automatically parsed by `KnowledgeExtractor` and converted into permanent knowledge graph triples.
+
+---
+
+## 6. Inspirations & Public Research
+
+This project is independently developed and draws inspiration from publicly available discussions and research on autonomous agent harnesses:
+
+- **OpenAI Harness Engineering Research**: Drawing from OpenAI's public publications regarding model evaluation harnesses, benchmark sandboxing, and execution environments. Symphony applies these concepts to full-lifecycle software engineering.
+- **Anthropic Context & Agent Workflows**: Applying findings from Anthropic's research on long-running agents, structured tool boundaries, and progressive context disclosure to prevent context window dilution.
+- **Semantic Web & RDF Standards**: Utilizing Subject-Predicate-Object semantic triples (`KnowledgeGraphService`) to represent organizational learnings in a queryable, model-independent structure.
+
+---
+
+## 7. System Overview & How It Works
+
+Symphony coordinates incoming goals through an end-to-end lifecycle spanning analysis, planning, execution, deployment simulation, and memory updating.
+
+```mermaid
+flowchart TD
+    Start(["User submits Goal Request<br/><code>POST /execute</code>"]) --> Intent["1. Intent Analyzer<br/><i>Extracts Domains & Intent Type</i>"]
+    Intent --> Router["2. Harness Router<br/><i>Sorts Domains into Canonical SDLC Order</i>"]
+    Router --> Selector["3. Harness Selector<br/><i>Queries Registry for Active Instances</i>"]
+    Selector --> Planner["4. Execution Planner<br/><i>Builds Linear ExecutionPlan</i>"]
+    Planner --> CtxMgr["5. Context Manager<br/><i>Assembles Session Vars, State, Policies, Triples</i>"]
+    CtxMgr --> ExecEngine["6. Execution Engine<br/><i>Executes Harnesses & Logs Traces</i>"]
+    
+    ExecEngine --> CheckSuccess{"Harness Steps<br/>Succeeded?"}
+    CheckSuccess -- No --> LogFail["Log Failure to FailureRepository<br/>& Halt Execution"]
+    LogFail --> RespAgg
+    CheckSuccess -- Yes --> RespAgg["7. Response Aggregator<br/><i>Consolidates Generated Files & Test Results</i>"]
+    
+    RespAgg --> ProdRun["8. Production Runtime Simulation<br/><i>Executes Artifacts & Evaluates Scripts</i>"]
+    ProdRun --> Telem["9. Telemetry Collector<br/><i>Captures Exit Codes, Logs, CPU Metrics</i>"]
+    Telem --> KnowlExt["10. Knowledge Extractor<br/><i>Parses Events (SUCCESS / FAILURE)</i>"]
+    KnowlExt --> LearnEng["11. Learning Engine<br/><i>Generates Memory Update Actions</i>"]
+    LearnEng --> MemUpd["12. Memory Updater<br/><i>Commits to KnowledgeGraph, EvidenceStore, FailureRepo</i>"]
+    MemUpd --> Finish(["Return Unified ExecuteResponse"])
+
+    style Start fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Finish fill:#1e293b,stroke:#4ade80,stroke-width:2px,color:#fff
+    style CheckSuccess fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
+```
+
+---
+
+## 8. High-Level Design (HLD)
+
+The Symphony architecture is structured into five distinct operational layers:
+
+```mermaid
+flowchart TB
+    subgraph Layer1["1. External Interface & API Layer"]
+        CLI["FastAPI Web Layer (app.main)"]
+        UI["Next.js 16 Web Visualizer (frontend)"]
+        Endpoints["REST Routers (/execute, /memory, /knowledge-graph, /telemetry)"]
+    end
+
+    subgraph Layer2["2. Symphony Control Plane (core.*)"]
+        Orch["SymphonyOrchestrator"]
+        IA["PatternIntentAnalyzer"]
+        HR["DomainHarnessRouter"]
+        HS["RegistryHarnessSelector"]
+        EP["SequentialExecutionPlanner"]
+        CM["PlatformContextManager"]
+        EE["Engine (Execution Engine)"]
+        RA["ArtifactAggregator"]
+    end
+
+    subgraph Layer3["3. Engineering Harness Layer (harnesses.*)"]
+        HRG["HarnessRegistry"]
+        H_Spec["SpecificationHarness"]
+        H_Res["ResearchHarness"]
+        H_Arch["ArchitectureHarness"]
+        H_Eng["EngineeringHarness"]
+        H_Eval["EvaluationHarness"]
+        H_Dep["DeploymentHarness"]
+        H_Learn["LearningHarness"]
+    end
+
+    subgraph Layer4["4. Shared Core Services (memory.*)"]
+        M_Mem["MemoryService (Traces)"]
+        M_Ctx["ContextService (Variables)"]
+        M_State["StateService (Workspace)"]
+        M_KG["KnowledgeGraphService (Triples)"]
+        M_Ev["EvidenceStoreService (Evidence)"]
+        M_Fail["FailureRepository (Incidents)"]
+        M_Pol["PolicyEngineService (Compliance)"]
+    end
+
+    subgraph Layer5["5. Production Runtime & Feedback Loop (runtime.*)"]
+        R_Prod["ProductionRuntime"]
+        R_Tel["TelemetryCollector"]
+        R_Ext["KnowledgeExtractor"]
+        R_Learn["LearningEngine"]
+        R_Upd["MemoryUpdater"]
+    end
+
+    UI <--> Endpoints
+    CLI <--> Endpoints
+    Endpoints --> Orch
+    Orch --> IA & HR & HS & EP & CM & EE & RA
+    HS --> HRG
+    HRG --> H_Spec & H_Res & H_Arch & H_Eng & H_Eval & H_Dep & H_Learn
+    CM <--> M_Ctx & M_State & M_KG & M_Pol
+    EE <--> M_Mem & M_Fail
+    Endpoints --> R_Prod
+    R_Prod --> R_Tel --> R_Ext --> R_Learn --> R_Upd
+    R_Upd --> M_KG & M_Fail & M_Ev & M_Pol
+
+    style Layer1 fill:#0f172a,stroke:#64748b,stroke-width:2px,color:#fff
+    style Layer2 fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff
+    style Layer3 fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
+    style Layer4 fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#fff
+    style Layer5 fill:#701a75,stroke:#d946ef,stroke-width:2px,color:#fff
+```
+
+---
+
+## 9. Low-Level Design (LLD)
+
+### Class & Module Design
+
+```mermaid
+classDiagram
+    class SymphonyOrchestrator {
+        +IntentAnalyzer intent_analyzer
+        +HarnessRouter harness_router
+        +HarnessSelector harness_selector
+        +ExecutionPlanner execution_planner
+        +ContextManager context_manager
+        +ExecutionEngine execution_engine
+        +ResponseAggregator response_aggregator
+        +HarnessRegistry harness_registry
+        +run(request_text: str, run_id: Optional[str]) ExecutionArtifacts
+    }
+
+    class Harness {
+        <<abstract>>
+        +Domain domain*
+        +execute(context: ExecutionContext, parameters: Dict)* HarnessResult
+    }
+
+    class SpecificationHarness {
+        +domain: Domain.SPECIFICATION
+        +execute(context, parameters) HarnessResult
+    }
+    class ResearchHarness {
+        +domain: Domain.RESEARCH
+        +execute(context, parameters) HarnessResult
+    }
+    class ArchitectureHarness {
+        +domain: Domain.ARCHITECTURE
+        +execute(context, parameters) HarnessResult
+    }
+    class EngineeringHarness {
+        +domain: Domain.ENGINEERING
+        +execute(context, parameters) HarnessResult
+    }
+    class EvaluationHarness {
+        +domain: Domain.EVALUATION
+        +execute(context, parameters) HarnessResult
+    }
+    class DeploymentHarness {
+        +domain: Domain.DEPLOYMENT
+        +execute(context, parameters) HarnessResult
+    }
+    class LearningHarness {
+        +domain: Domain.LEARNING
+        +execute(context, parameters) HarnessResult
+    }
+
+    class HarnessRegistry {
+        -Dict~Domain, Harness~ _harnesses
+        +register(harness: Harness) void
+        +get_harness(domain: Domain) Harness
+        +list_harnesses() List~Harness~
+        +clear_registry() void
+    }
+
+    class Engine {
+        -MemoryService _memory_service
+        -FailureRepository _failure_repo
+        +execute_plan(plan, context, registry) List~HarnessResult~
+    }
+
+    class PlatformContextManager {
+        -ContextService _context_service
+        -StateService _state_service
+        -PolicyEngineService _policy_engine
+        -KnowledgeGraphService _knowledge_graph
+        +prepare_context(run_id: str) ExecutionContext
+    }
+
+    class ProductionRuntime {
+        +run_deployment(artifacts: ExecutionArtifacts) Dict
+    }
+
+    class TelemetryCollector {
+        +collect_telemetry(run_id: str, runtime_output: Dict) Dict
+    }
+
+    class KnowledgeExtractor {
+        +extract_knowledge(telemetry_data: Dict) List~Dict~
+    }
+
+    class LearningEngine {
+        +generate_updates(extracted_events: List~Dict~) List~Dict~
+    }
+
+    class MemoryUpdater {
+        +apply_updates(updates, knowledge_graph, policy_engine, failure_repo, evidence_store) void
+    }
+
+    Harness <|-- SpecificationHarness
+    Harness <|-- ResearchHarness
+    Harness <|-- ArchitectureHarness
+    Harness <|-- EngineeringHarness
+    Harness <|-- EvaluationHarness
+    Harness <|-- DeploymentHarness
+    Harness <|-- LearningHarness
+
+    SymphonyOrchestrator --> HarnessRegistry
+    SymphonyOrchestrator --> Engine
+    SymphonyOrchestrator --> PlatformContextManager
+    HarnessRegistry o-- Harness
+```
+
+### Seven Control Plane Pipeline Stages
+
+| Stage | Implementation Class | Input | Output | Invariant / Behavior |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Intent Analysis** | `core.intent_analyzer.PatternIntentAnalyzer` | `request_text: str` | `Intent` | Maps keywords (`spec`, `research`, `code`, `test`, etc.) to `Domain` enums. |
+| **2. Harness Routing** | `core.harness_router.DomainHarnessRouter` | `Intent` | `List[Domain]` | Sorts requested domains into canonical lifecycle order. |
+| **3. Harness Selection** | `core.harness_selector.RegistryHarnessSelector` | `List[Domain]`, `HarnessRegistry` | `List[Harness]` | Retrieves instantiated harness objects matching the required domains. |
+| **4. Execution Planning** | `core.execution_planner.SequentialExecutionPlanner` | `run_id: str`, `List[Harness]` | `ExecutionPlan` | Constructs sequential `ExecutionStep` instances with unique step IDs. |
+| **5. Context Assembly** | `core.context_manager.PlatformContextManager` | `run_id: str` | `ExecutionContext` | Hydrates active session variables, state dictionary, policies, and RDF triples. |
+| **6. Execution Engine** | `core.execution_engine.Engine` | `ExecutionPlan`, `ExecutionContext`, `Registry` | `List[HarnessResult]` | Executes steps in sequence, logs traces, propagates state updates, halts on error. |
+| **7. Response Aggregation** | `core.response_aggregator.ArtifactAggregator` | `run_id: str`, `List[HarnessResult]` | `ExecutionArtifacts` | Consolidates generated files, test logs, deployment status, and overall success flag. |
+
+---
+
+## 10. End-to-End Working & Sequence Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Engineer / Web Client
+    participant API as FastAPI Router (/execute)
+    participant Orch as SymphonyOrchestrator
+    participant Reg as HarnessRegistry
+    participant CtxMgr as ContextManager
+    participant Engine as ExecutionEngine
+    participant Harness as Domain Harnesses
+    participant Runtime as ProductionRuntime
+    participant Feedback as Runtime Feedback Loop
+    participant Memory as Shared Core Services
+
+    Client->>API: POST /execute {"request_text": "Write spec, code and test"}
+    API->>Orch: run(request_text, run_id)
+    
+    Note over Orch: 1. Intent Analysis & Canonical Routing
+    Orch->>Reg: Query harnesses for required domains
+    Reg-->>Orch: Return [SpecHarness, EngHarness, EvalHarness]
+    
+    Orch->>CtxMgr: prepare_context(run_id)
+    CtxMgr->>Memory: Fetch variables, state, policies, triples
+    Memory-->>CtxMgr: Return platform context
+    CtxMgr-->>Orch: ExecutionContext
+    
+    Orch->>Engine: execute_plan(plan, context, registry)
+    loop For each ExecutionStep
+        Engine->>Memory: Log step start trace
+        Engine->>Harness: execute(context, params)
+        Harness-->>Engine: HarnessResult (outputs, logs, state_updates)
+        Engine->>Memory: Propagate state & variables
+        alt Step Failed
+            Engine->>Memory: Log failure to FailureRepository
+            Note over Engine: Halt remaining steps
+        end
+    end
+    Engine-->>Orch: List[HarnessResult]
+    Orch-->>API: ExecutionArtifacts
+
+    Note over API,Feedback: 2. Closed-Loop Production Feedback Execution
+    API->>Runtime: run_deployment(artifacts)
+    Runtime-->>API: runtime_output (status, exit_code, metrics, logs)
+    
+    API->>Feedback: Collect telemetry & extract events
+    Feedback->>Feedback: KnowledgeExtractor.extract_knowledge()
+    Feedback->>Feedback: LearningEngine.generate_updates()
+    Feedback->>Memory: Commit updates (Triples, Failures, Evidence)
+    
+    API-->>Client: 200 OK (ExecuteResponse with artifacts, telemetry, and learnings)
+```
+
+---
+
+## 11. Context Engineering
+
+Context in Symphony is actively managed through progressive assembly rather than static prompt dumps.
+
+```mermaid
+flowchart LR
+    subgraph MemorySources["Shared Core Services Layer"]
+        CV["ContextService<br/><i>(Session Variables)</i>"]
+        SS["StateService<br/><i>(Workspace State)</i>"]
+        PE["PolicyEngineService<br/><i>(Compliance Rules)</i>"]
+        KG["KnowledgeGraphService<br/><i>(Semantic Triples)</i>"]
+    end
+
+    subgraph Assembly["Context Assembly"]
+        PCM["PlatformContextManager<br/><code>prepare_context(run_id)</code>"]
+    end
+
+    subgraph ContextObject["ExecutionContext Substrate"]
+        EC["ExecutionContext<br/>• run_id<br/>• variables: Dict<br/>• state: Dict<br/>• policies: List<br/>• knowledge_triples: List"]
+    end
+
+    CV --> PCM
+    SS --> PCM
+    PE --> PCM
+    KG --> PCM
+    PCM --> EC
+    EC --> HarnessExec["Active Domain Harness Execution"]
+
+    style MemorySources fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Assembly fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
+    style ContextObject fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
+```
+
+### Context Isolation & Variable Propagation
+
+During execution, each harness receives an immutable reference to the `ExecutionContext`. When a harness finishes, its `updated_variables` and `updated_state` dictionaries are merged into the shared context before the next harness executes:
+
+```python
+# From core/execution_engine.py
+result = harness.execute(context, step.parameters)
+context.variables.update(result.updated_variables)
+context.state.update(result.updated_state)
+```
+
+---
+
+## 12. The Engineering Harness Layer
+
+Symphony implements seven specialized domain harnesses inheriting from `harnesses.base.Harness`:
+
+| Harness Class | Domain Enum | Primary Responsibility | Key Outputs | State/Variable Updates |
+| :--- | :--- | :--- | :--- | :--- |
+| `SpecificationHarness` | `SPECIFICATION` | Requirements specification & acceptance criteria generation | `generated_files["spec.md"]` | `specification_generated: True`<br>`last_active_phase: "SPECIFICATION"` |
+| `ResearchHarness` | `RESEARCH` | Technical investigation & dependency analysis | `outputs["research_notes"]` | `research_completed: True`<br>`last_active_phase: "RESEARCH"` |
+| `ArchitectureHarness` | `ARCHITECTURE` | Component blueprints & schema design | `generated_files["architecture_blueprint.md"]` | `architecture_designed: True`<br>`last_active_phase: "ARCHITECTURE"` |
+| `EngineeringHarness` | `ENGINEERING` | Implementation code synthesis & file generation | `generated_files[target_file]` | `code_written: True`<br>`last_active_phase: "ENGINEERING"` |
+| `EvaluationHarness` | `EVALUATION` | Automated test suite execution & verification | `outputs["test_results"]` | `evaluation_success: bool`<br>`last_active_phase: "EVALUATION"` |
+| `DeploymentHarness` | `DEPLOYMENT` | Release packaging & target environment deployment | `outputs["deployment_status"]` | `deployed: True`<br>`last_active_phase: "DEPLOYMENT"` |
+| `LearningHarness` | `LEARNING` | Failure post-mortem analysis & semantic triple extraction | `outputs["learning_notes"]`<br>`outputs["new_triples"]` | `learnings_extracted: True`<br>`last_active_phase: "LEARNING"` |
+
+---
+
+## 13. Hooks, Policies, & Guardrails
+
+Symphony implements deterministic policy checking via `memory.policy_engine.PolicyEngineService`.
+
+### Policy Engine Interface
+
+Policies are defined as callable predicate rules evaluated against active context dictionaries:
+
+```python
+PolicyRule = Callable[[Dict[str, Any]], bool]
+
+class PolicyEngineService:
+    def add_policy(self, policy_id: str, description: str, rule: Optional[PolicyRule] = None) -> None:
+        self._policies[policy_id] = {"policy_id": policy_id, "description": description}
+        if rule is not None:
+            self._rules[policy_id] = rule
+
+    def evaluate_policy(self, policy_id: str, context: Dict[str, Any]) -> bool:
+        if policy_id not in self._policies:
+            return True
+        if policy_id in self._rules:
+            return self._rules[policy_id](context)
+        return True
+```
+
+### Why Mechanical Policies Beat Prompt Instructions
+
+1. **Deterministic Guarantees**: A policy evaluation returns a boolean `True`/`False` rather than an ambiguous text reply.
+2. **Pre-Execution Validation**: Checks can run before compute or tool invocation occurs.
+3. **Auditability**: Policies and evaluation results are logged directly to `EvidenceStoreService`.
+
+---
+
+## 14. Production Runtime & Tooling Simulation
+
+The `runtime.production.ProductionRuntime` class acts as the execution environment where Symphony artifacts are deployed and validated:
+
+```mermaid
+flowchart TD
+    Artifacts["ExecutionArtifacts"] --> CheckStatus{"Artifact Success == True?"}
+    CheckStatus -- No --> Abort["Status: FAILED<br/>Exit Code: 1<br/>Metrics: 0.0% CPU"]
+    CheckStatus -- Yes --> ScanScripts["Iterate generated_files"]
+    
+    ScanScripts --> EvalScript{"Script contains 'error' or 'raise'?"}
+    EvalScript -- Yes --> Crash["Simulated Crash Exception<br/>Status: CRASHED<br/>Exit Code: 127<br/>Metrics: 85.5% CPU"]
+    EvalScript -- No --> Stable["All Scripts Pass<br/>Status: RUNNING<br/>Exit Code: 0<br/>Metrics: 12.4% CPU"]
+
+    style Artifacts fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Crash fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff
+    style Stable fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
+```
+
+---
+
+## 15. Shared Core Services & State Management
+
+All orchestrator components and API endpoints access shared state through seven standardized platform services managed by the singleton dependency container (`app.dependencies.Container`):
+
+```mermaid
+flowchart LR
+    subgraph Container["Singleton Dependency Container (app.dependencies.Container)"]
+        direction TB
+        MS["MemoryService<br/><i>Execution Traces & Step Logs</i>"]
+        CS["ContextService<br/><i>Key-Value Session Variables</i>"]
+        SS["StateService<br/><i>Workspace Component State</i>"]
+        KG["KnowledgeGraphService<br/><i>RDF Subject-Predicate-Object Triples</i>"]
+        ES["EvidenceStoreService<br/><i>Immutable Hard Evidence Store</i>"]
+        FR["FailureRepository<br/><i>Crash Logs & Post-Mortem Records</i>"]
+        PE["PolicyEngineService<br/><i>Engineering Compliance Predicates</i>"]
+    end
+
+    API["FastAPI Endpoints"] --> Container
+    Orchestrator["Symphony Control Plane"] --> Container
+    RuntimeLoop["Production Feedback Loop"] --> Container
+
+    style Container fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
+```
+
+### Service Specifications
+
+1. **`MemoryService` (`memory/memory_service.py`)**: Stores chronological execution traces per `run_id`.
+2. **`ContextService` (`memory/context_service.py`)**: Manages ephemeral session key-value pairs shared between active harness steps.
+3. **`StateService` (`memory/state_service.py`)**: Tracks persistent workspace state variables (e.g., active phase, build status).
+4. **`KnowledgeGraphService` (`memory/knowledge_graph.py`)**: Stores semantic triples `(subject, predicate, object, metadata)` with pattern querying by subject, predicate, or object.
+5. **`EvidenceStoreService` (`memory/evidence_store.py`)**: Records hard evidence records (`execution_artifacts`, `test_results`, generated code hashes) keyed by `run_id`.
+6. **`FailureRepository` (`memory/failure_repository.py`)**: Persists structured incident records (`run_id`, `component`, `error_message`, `stack_trace`, `timestamp`).
+7. **`PolicyEngineService` (`memory/policy_engine.py`)**: Manages registered compliance rules and evaluates them against input dictionaries.
+
+---
+
+## 16. Closed-Loop Telemetry & Learning Engine
+
+The core differentiator of Symphony is its continuous runtime feedback loop: **"Loss becomes Information."**
+
+```mermaid
+flowchart LR
+    Art["Execution Artifacts"] --> PR["Production Runtime"]
+    PR --> TC["Telemetry Collector"]
+    TC --> KE["Knowledge Extractor"]
+    KE --> LE["Learning Engine"]
+    LE --> MU["Memory Updater"]
+    MU --> SCS["Shared Core Services<br/><i>(Knowledge Graph & Failure Repo)</i>"]
+
+    style Art fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+    style PR fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
+    style TC fill:#0f766e,stroke:#2dd4bf,stroke-width:2px,color:#fff
+    style KE fill:#c2410c,stroke:#fb923c,stroke-width:2px,color:#fff
+    style LE fill:#7e22ce,stroke:#c084fc,stroke-width:2px,color:#fff
+    style MU fill:#be185d,stroke:#f472b6,stroke-width:2px,color:#fff
+    style SCS fill:#065f46,stroke:#34d399,stroke-width:2px,color:#fff
+```
+
+### Telemetry to Knowledge Transformation
+
+1. **Collection (`TelemetryCollector`)**: Aggregates `status` (`RUNNING`, `CRASHED`, `FAILED`), `exit_code`, log strings, and hardware metrics.
+2. **Extraction (`KnowledgeExtractor`)**: 
+   - When `CRASHED`/`FAILED`: Emits a `FAILURE_EVENT` detailing specific exception messages.
+   - When `RUNNING`: Emits a `SUCCESS_EVENT` confirming stable deployment.
+3. **Learning Synthesis (`LearningEngine`)**:
+   - For `FAILURE_EVENT`: Generates a `LOG_FAILURE` action and an `ADD_TRIPLE` action (`Run:{run_id}` $\rightarrow$ `encountered_failure` $\rightarrow$ `{error_msg}`).
+   - For `SUCCESS_EVENT`: Generates an `ADD_TRIPLE` action (`Run:{run_id}` $\rightarrow$ `deployed_successfully` $\rightarrow$ `StableStatus`).
+4. **Persistence (`MemoryUpdater`)**: Executes mutations against `KnowledgeGraphService`, `FailureRepository`, and `EvidenceStoreService`.
+
+---
+
+## 17. Verification Architecture & Quality Gates
+
+Symphony adheres to the core axiom: **An agent claiming "done" is not proof of completion.**
+
+```mermaid
+flowchart TD
+    Step["Harness Execution Step"] --> G1{"Static Gate<br/>Harness Output Valid?"}
+    G1 -- Fail --> Halt["Halt Execution Engine<br/>Log to FailureRepository"]
+    G1 -- Pass --> G2{"Dynamic Gate<br/>EvaluationHarness Tests Pass?"}
+    G2 -- Fail --> Halt
+    G2 -- Pass --> G3{"Evidence Gate<br/>Store in EvidenceStoreService"}
+    G3 --> G4{"Runtime Gate<br/>ProductionRuntime Exit Code == 0?"}
+    G4 -- Fail --> LearnFail["Extract FAILURE_EVENT<br/>Update Knowledge Graph"]
+    G4 -- Pass --> LearnPass["Extract SUCCESS_EVENT<br/>Commit Stable Triple"]
+
+    style Step fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Halt fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff
+    style LearnFail fill:#701a75,stroke:#e879f9,stroke-width:2px,color:#fff
+    style LearnPass fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
+```
+
+---
+
+## 18. Architecture Enforcement
+
+Symphony enforces architecture through mechanical constraints in code rather than documentation alone:
+
+```mermaid
+flowchart TD
+    subgraph DomainOrder["Canonical SDLC Pipeline Order (DomainHarnessRouter)"]
+        direction LR
+        D1["1. SPECIFICATION"] --> D2["2. RESEARCH"]
+        D2 --> D3["3. ARCHITECTURE"]
+        D3 --> D4["4. ENGINEERING"]
+        D4 --> D5["5. EVALUATION"]
+        D5 --> D6["6. DEPLOYMENT"]
+        D6 --> D7["7. LEARNING"]
+    end
+
+    style DomainOrder fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
+```
+
+### Dependency Invariants
+
+1. **Sequential Lifecycle Ordering**: If an incoming goal requires both `ENGINEERING` and `SPECIFICATION`, `DomainHarnessRouter` guarantees that `SPECIFICATION` executes before `ENGINEERING`.
+2. **Separation of Concerns**: Domain harnesses cannot directly mutate other domain states; they communicate exclusively through the `ExecutionContext` mediated by `Engine`.
+3. **Decoupled Delivery**: Control plane routing is model-agnostic and does not depend on external vendor APIs.
+
+---
+
+## 19. Testing Strategy
+
+The test suite in `tests/` provides complete coverage across API routes, domain harnesses, shared memory services, orchestrator pipeline components, and the closed-loop runtime feedback engine.
+
+```mermaid
+pie title Test Suite Distribution (28 Total Passing Tests)
+    "test_harnesses.py (8 tests)" : 8
+    "test_memory.py (7 tests)" : 7
+    "test_api.py (6 tests)" : 6
+    "test_orchestrator.py (5 tests)" : 5
+    "test_runtime.py (2 tests)" : 2
+```
+
+### Test Suite Breakdown
+
+| Test File | Test Class | Coverage & Tested Assertions |
+| :--- | :--- | :--- |
+| `tests/test_api.py` | `TestAPIEndpoints` | Validates `GET /health`, `POST /execute`, `GET /memory`, `GET /knowledge-graph`, `GET /failures`, `GET /telemetry`. Verifies HTTP status codes and JSON schema integrity. |
+| `tests/test_harnesses.py` | `TestHarnesses` | Validates `HarnessRegistry` registration/lookup and execution of all 7 harnesses (`Specification`, `Research`, `Architecture`, `Engineering`, `Evaluation`, `Deployment`, `Learning`). |
+| `tests/test_memory.py` | `TestMemoryServices` | Validates all 7 shared core services (`MemoryService`, `ContextService`, `StateService`, `KnowledgeGraphService`, `EvidenceStoreService`, `FailureRepository`, `PolicyEngineService`). |
+| `tests/test_orchestrator.py` | `TestOrchestratorControlPlane` | Tests keyword intent analysis, canonical domain routing order, registry lookup, plan generation, and full end-to-end `SymphonyOrchestrator.run()` execution. |
+| `tests/test_runtime.py` | `TestRuntimeFeedbackLoop` | Tests both successful and crashed production runtime feedback loops, validating telemetry collection, event extraction, and knowledge graph updates. |
+
+### Running the Test Suite
+
+```bash
+# Run pytest with root configuration
+python -m pytest tests/ -v
+```
+
+---
+
+## 20. CI/CD & Deployment Topology
+
+```mermaid
+flowchart TD
+    subgraph Source["GitHub Repository (jacobjerryarackal/harness-engineering)"]
+        Code["Python Backend + Next.js Frontend"]
+    end
+
+    subgraph DeployBackend["Backend Hosting: Render"]
+        Render["Uvicorn ASGI Server<br/><code>https://symphony-os.onrender.com</code>"]
+        Swagger["FastAPI Swagger UI<br/><code>/docs</code>"]
+    end
+
+    subgraph DeployFrontend["Frontend Hosting: Vercel"]
+        Vercel["Next.js 16 SSR & Static Edge<br/><code>https://harness-engineering-murex.vercel.app</code>"]
+        ReactFlowUI["React Flow DAG Visualizer"]
+    end
+
+    Source -->|Auto Deploy / Git Push| Render
+    Source -->|Auto Deploy / Git Push| Vercel
+    Vercel <-->|CORS REST API Requests| Render
+
+    style Source fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff
+    style DeployBackend fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
+    style DeployFrontend fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
+```
+
+---
+
+## 21. Technology Stack
+
+| Layer / Subsystem | Technology | Version | Purpose in Symphony |
+| :--- | :--- | :--- | :--- |
+| **Backend Language** | Python | `3.10+` | Core control plane, harness execution engine, and memory services. |
+| **API Framework** | FastAPI | `>=0.100.0` | Asynchronous REST API routing, OpenAPI schema generation, dependency injection. |
+| **ASGI Web Server** | Uvicorn | `>=0.20.0` | High-performance asynchronous HTTP server. |
+| **Data Validation** | Pydantic | `>=2.0.0` | Type-safe request/response validation schemas and serialization. |
+| **HTTP Client** | HTTPX | `>=0.24.0` | Asynchronous client communication and integration testing. |
+| **Configuration** | python-dotenv | Latest | Environment variable loading from `.env`. |
+| **Test Runner** | Pytest | `>=8.0.0` | Automated test suite execution across 28 unit and integration tests. |
+| **Frontend Framework** | Next.js | `16.2.10` | React server and client components, App Router, responsive page layout. |
+| **UI Library** | React | `19.2.4` | Declarative UI component architecture. |
+| **DAG Flow Visualizer** | React Flow (`@xyflow/react`) | `^12.11.2` | Interactive node graph animating real-time control plane execution. |
+| **Styling** | Tailwind CSS | `^4.0.0` | Design system, responsive utility classes, and glassmorphism styling. |
+| **Animation** | Framer Motion | `^12.42.2` | Micro-animations, view transitions, and status indicators. |
+| **Iconography** | Lucide React | `^1.25.0` | Consistent iconography across views and dashboards. |
+| **Data Visualization** | Recharts | `^3.9.2` | Telemetry performance and CPU utilization charts. |
+
+---
+
+## 22. Why Did We Choose This Tech Stack?
+
+1. **Python for the Control Plane**:
+   - Python is the de facto standard for AI systems, orchestration pipelines, and data manipulation.
+   - Dataclasses and type hinting enable clean domain models (`interfaces.py`) without runtime overhead.
+2. **FastAPI & Pydantic V2**:
+   - FastAPI provides native async execution, automatic OpenAPI/Swagger documentation generation, and dependency injection (`app.dependencies.get_container`).
+   - Pydantic V2 offers ultra-fast Rust-backed schema validation and serialization aliasing (`TripleModel.object` $\rightarrow$ `obj`).
+3. **Next.js 16 & React 19**:
+   - Next.js App Router provides optimal client/server rendering, fast hot-reloading during development, and zero-configuration Vercel deployment.
+4. **React Flow (`@xyflow/react`)**:
+   - Enables real-time visual representation of DAG execution pipelines. The 7-stage control plane transitions dynamically from idle (gray) to running (yellow) to success (green) or failure (red).
+5. **In-Memory Singleton Container (`Container`)**:
+   - Provides instantaneous state synchronization between `/execute` runs and `/memory`, `/knowledge-graph`, `/failures`, and `/telemetry` queries without external database dependencies.
+
+---
+
+## 23. Architectural Decision Records (ADRs)
+
+### ADR-001: Separation of Control Plane Orchestrator from Model Inference
+* **Status**: Accepted
+* **Decision**: Orchestration logic (`core/orchestrator.py`) is decoupled from LLM providers and model APIs.
+* **Rationale**: Prevents prompt pollution, isolates domain responsibilities, and allows model-agnostic harness testing.
+* **Trade-Off**: Requires structured intent parsing and domain routing abstractions.
+
+### ADR-002: In-Memory Singleton Dependency Injection Container
+* **Status**: Accepted
+* **Decision**: Manage shared core services via a centralized singleton dependency container (`app.dependencies.Container`).
+* **Rationale**: Guarantees state consistency across concurrent REST API requests during live execution.
+* **Trade-Off**: State is reset upon server process restart (designed for stateless cloud containers).
+
+### ADR-003: Canonical SDLC Pipeline Ordering
+* **Status**: Accepted
+* **Decision**: Enforce a strict chronological ordering (`SPECIFICATION` $\rightarrow$ `RESEARCH` $\rightarrow$ `ARCHITECTURE` $\rightarrow$ `ENGINEERING` $\rightarrow$ `EVALUATION` $\rightarrow$ `DEPLOYMENT` $\rightarrow$ `LEARNING`).
+* **Rationale**: Eliminates race conditions and ensures dependencies (e.g., specifications) exist before code generation begins.
+* **Trade-Off**: Prevents out-of-order execution unless explicitly reconfigured.
+
+### ADR-004: Closed-Loop Telemetry to Knowledge Graph Transformation
+* **Status**: Accepted
+* **Decision**: Production runtime outputs are automatically parsed for failure events and stored as RDF triples in `KnowledgeGraphService`.
+* **Rationale**: Guarantees that organizational knowledge accumulates permanently over time (*"Loss becomes Information"*).
+* **Trade-Off**: Knowledge graph size grows linearly with the number of executions.
+
+---
+
+## 24. Failure Handling & Recovery
+
+Symphony handles errors gracefully at every level of the stack:
+
+```mermaid
+flowchart TD
+    Err["Exception Encountered during ExecutionStep"] --> Trap["Engine Traps Exception"]
+    Trap --> LogMem["MemoryService.log_trace(run_id, error_msg)"]
+    LogMem --> LogFail["FailureRepository.log_failure(run_id, component, error_msg)"]
+    LogFail --> CreateResult["Create HarnessResult(success=False, error_message=...)"]
+    CreateResult --> Halt["Halt ExecutionPlan Loop"]
+    Halt --> ReturnPartial["Return Partial Artifacts with success=False"]
+    ReturnPartial --> RuntimeEval["ProductionRuntime marks status: FAILED"]
+    RuntimeEval --> ExtFail["KnowledgeExtractor creates FAILURE_EVENT"]
+    ExtFail --> LearnFail["LearningEngine creates ADD_TRIPLE (encountered_failure)"]
+    LearnFail --> ApplyMem["MemoryUpdater persists failure to KnowledgeGraph"]
+
+    style Err fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff
+    style Trap fill:#1e293b,stroke:#818cf8,stroke-width:2px,color:#fff
+    style ApplyMem fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
+```
+
+---
+
+## 25. Security & Guardrails
+
+| Security Domain | Implemented Guardrail in Symphony | Location |
+| :--- | :--- | :--- |
+| **CORS Policy** | Whitelist-restricted origins configurable via `ALLOWED_ORIGINS` environment variable. | `app/main.py` |
+| **Input Validation** | Strict request schema parsing via Pydantic V2 models (`ExecuteRequest`). | `app/schemas/schemas.py` |
+| **Error Isolation** | Exception shielding prevents server crashes; unhandled harness exceptions return structured `500` / `400` responses. | `app/routers/execute.py` |
+| **Execution Gating** | Execution engine stops step propagation immediately upon error detection. | `core/execution_engine.py` |
+| **Policy Compliance** | Predicate validation via `PolicyEngineService` before state updates. | `memory/policy_engine.py` |
+
+---
+
+## 26. Observability & Telemetry
+
+Symphony provides complete visibility into system operations across four dedicated inspection endpoints:
+
+```mermaid
+flowchart LR
+    subgraph ObservabilitySurfaces["Observability & Inspection Endpoints"]
+        E1["<code>GET /memory</code><br/>Traces, Session Variables, Workspace State"]
+        E2["<code>GET /knowledge-graph</code><br/>Semantic Triples & Metadata"]
+        E3["<code>GET /failures</code><br/>Component Failures & Stack Traces"]
+        E4["<code>GET /telemetry</code><br/>Exit Codes, Hardware Metrics, Runtime Logs"]
+    end
+
+    style ObservabilitySurfaces fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+```
+
+---
+
+## 27. Project Structure
 
 ```text
-Symphony/
-├── README.md                           # Project overview & quick start guide
-├── SYSTEM_DESIGN.md                    # Detailed technical architecture specification
-├── pytest.ini                          # Pytest root configuration
-├── requirements.txt                    # Python dependencies
+harness-engineering/
+├── .env.example                        # Template environment variables for backend
+├── .gitignore                          # Git ignore rules for Python, Node, and caches
+├── pytest.ini                          # Pytest root configuration (pythonpath = .)
+├── requirements.txt                    # Backend dependencies (FastAPI, Uvicorn, Pydantic, etc.)
+├── README.md                           # Comprehensive production documentation
+├── SYSTEM_DESIGN.md                    # Technical system design specification
 │
 ├── app/                                # FastAPI Web Application Layer
-│   ├── main.py                         # Application entrypoint (CORS, Lifespan handler)
-│   ├── dependencies.py                 # Singleton Container dependency injection
-│   ├── routers/
-│   │   ├── execute.py                  # POST /execute (Main orchestration pipeline)
+│   ├── main.py                         # Application entrypoint, CORS setup, and lifespan handlers
+│   ├── dependencies.py                 # Singleton Container dependency injection setup
+│   ├── routers/                        # API route controllers
+│   │   ├── execute.py                  # POST /execute (Main orchestration & feedback pipeline)
 │   │   ├── memory.py                   # GET /memory, /knowledge-graph, /failures, /telemetry
 │   │   └── health.py                   # GET /health
-│   └── schemas/
-│       └── schemas.py                  # Pydantic V2 request & response models
+│   └── schemas/                        # Pydantic V2 request & response validation schemas
+│       └── schemas.py                  # Models: ExecuteRequest, ExecuteResponse, TripleModel, etc.
 │
 ├── core/                               # Symphony Control Plane Core
-│   ├── orchestrator.py                 # SymphonyOrchestrator main pipeline
-│   ├── interfaces.py                   # Dataclasses (Intent, ExecutionPlan, HarnessResult)
+│   ├── interfaces.py                   # Core dataclasses (Intent, ExecutionPlan, HarnessResult, etc.)
+│   ├── orchestrator.py                 # SymphonyOrchestrator pipeline coordinator
 │   ├── intent_analyzer.py              # PatternIntentAnalyzer keyword intent parser
-│   ├── harness_router.py               # DomainHarnessRouter sequential ordering
+│   ├── harness_router.py               # DomainHarnessRouter sequential SDLC ordering
 │   ├── harness_selector.py             # RegistryHarnessSelector lookup
-│   ├── execution_planner.py            # SequentialExecutionPlanner strategy
+│   ├── execution_planner.py            # SequentialExecutionPlanner strategy generator
 │   ├── context_manager.py              # PlatformContextManager context assembly
-│   ├── execution_engine.py             # Engine sequential step execution
+│   ├── execution_engine.py             # Engine sequential step coordinator & trace logger
 │   └── response_aggregator.py          # ArtifactAggregator output consolidation
 │
-├── harnesses/                          # Specialized Engineering Harnesses
+├── harnesses/                          # Specialized Engineering Harness Layer
 │   ├── base.py                         # Abstract Harness base class
-│   ├── registry.py                     # HarnessRegistry domain mapping
-│   └── [specification, research, architecture, engineering, evaluation, deployment, learning].py
+│   ├── registry.py                     # HarnessRegistry domain-to-harness mapping
+│   ├── specification.py                # SpecificationHarness (spec.md generation)
+│   ├── research.py                     # ResearchHarness (investigation & notes)
+│   ├── architecture.py                 # ArchitectureHarness (architecture_blueprint.md)
+│   ├── engineering.py                  # EngineeringHarness (source code generation)
+│   ├── evaluation.py                   # EvaluationHarness (test execution & assertions)
+│   ├── deployment.py                   # DeploymentHarness (runtime release packaging)
+│   └── learning.py                     # LearningHarness (failure analysis & triples)
 │
-├── memory/                             # Shared Core Services
-│   └── [memory, context, state, knowledge_graph, evidence_store, failure_repository, policy_engine].py
+├── memory/                             # Shared Core Services & State Layer
+│   ├── memory_service.py               # MemoryService (execution traces per run_id)
+│   ├── context_service.py              # ContextService (session key-value variables)
+│   ├── state_service.py                # StateService (workspace component state)
+│   ├── knowledge_graph.py              # KnowledgeGraphService (RDF triple store & querying)
+│   ├── evidence_store.py               # EvidenceStoreService (immutable evidence store)
+│   ├── failure_repository.py           # FailureRepository (incident logs & stack traces)
+│   └── policy_engine.py                # PolicyEngineService (compliance rules & checks)
 │
 ├── runtime/                            # Production Runtime & Feedback Loop
-│   └── [production, telemetry, knowledge_extraction, learning_engine, memory_update].py
+│   ├── production.py                   # ProductionRuntime simulation environment
+│   ├── telemetry.py                    # TelemetryCollector (logs, exit codes, metrics)
+│   ├── knowledge_extraction.py         # KnowledgeExtractor (event pattern identification)
+│   ├── learning_engine.py              # LearningEngine (update action generation)
+│   └── memory_update.py                # MemoryUpdater (committing updates to shared services)
 │
-├── frontend/                           # Next.js 15 Web Dashboard
+├── frontend/                           # Next.js 16 Web Dashboard
+│   ├── package.json                    # Node dependencies (Next.js 16, React 19, React Flow)
+│   ├── tsconfig.json                   # TypeScript configuration
+│   ├── .env.example                    # Frontend environment variable template
 │   └── src/
-│       ├── app/                        # Next.js App Router pages
-│       ├── components/                 # React Flow visualizer & view modules
-│       └── lib/                        # API fetch client (`lib/api.ts`)
+│       ├── app/                        # Next.js App Router (layout, global CSS, page)
+│       ├── components/                 # React Flow DAG visualizer & tabbed inspection views
+│       └── lib/                        # API fetch client (lib/api.ts)
 │
-└── tests/                              # Automated Pytest Suite
-    └── [test_api, test_harnesses, test_memory, test_orchestrator, test_runtime].py
+├── docs/                               # Architectural Documentation Assets
+│   └── architecture/                   # High-resolution HLD and LLD architectural diagrams
+│       ├── hld.png                     # System High-Level Design diagram
+│       └── lld.png                     # System Low-Level Design diagram
+│
+└── tests/                              # Automated Pytest Suite (28 Tests)
+    ├── test_api.py                     # API route & status code tests
+    ├── test_harnesses.py               # Harness registry & domain harness tests
+    ├── test_memory.py                  # Shared core services & store tests
+    ├── test_orchestrator.py            # Control plane orchestrator & pipeline tests
+    └── test_runtime.py                 # Production runtime feedback loop tests
 ```
 
 ---
 
-## Environment Variables
-
-### Backend Configuration (`.env`)
-
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| `PORT` | Port number for Uvicorn ASGI server | `8000` | No |
-| `HOST` | Bind network host interface | `0.0.0.0` | No |
-| `ALLOWED_ORIGINS` | Comma-separated CORS origins allowed to invoke API | `http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000` | No |
-
-### Frontend Configuration (`frontend/.env.local`)
-
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | Public API URL for FastAPI Control Plane backend | `http://127.0.0.1:8000` | Yes (Production) |
-
----
-
-## Quick Start & Local Development
+## 28. Local Development & Quick Start
 
 ### Prerequisites
 
-* Python 3.10+
-* Node.js 18+ & npm
+- **Python 3.10+** (Tested on Python 3.11.9)
+- **Node.js 18+** & **npm**
 
-### 1. Backend Setup
+---
 
-Clone the repository and set up environment:
+### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/jacobjerryarackal/harness-engineering.git
 cd harness-engineering
+```
 
-# Copy example environment file
+---
+
+### Step 2: Backend Setup & Testing
+
+```bash
+# 1. Create and activate a Python virtual environment
+python -m venv venv
+# On Linux/macOS:
+source venv/bin/activate
+# On Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+
+# 2. Install backend dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
 cp .env.example .env
 
-# Install Python requirements
-pip install -r requirements.txt
-```
+# 4. Run the automated test suite
+python -m pytest tests/ -v
 
-Run the automated test suite:
-
-```bash
-pytest
-```
-
-Start the Uvicorn ASGI dev server:
-
-```bash
+# 5. Start the Uvicorn ASGI server
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-The API will be live at `http://127.0.0.1:8000`. Access interactive Swagger documentation at `http://127.0.0.1:8000/docs`.
+The FastAPI backend will be live at `http://127.0.0.1:8000`.  
+Access the interactive OpenAPI Swagger UI at `http://127.0.0.1:8000/docs`.
 
-### 2. Frontend Setup
+---
 
-In a separate terminal, set up and run the Next.js interface:
+### Step 3: Frontend Dashboard Setup
+
+In a separate terminal window:
 
 ```bash
 cd frontend
 
-# Copy example environment file
+# 1. Configure environment
 cp .env.example .env.local
 
-# Install Node dependencies
+# 2. Install Node dependencies
 npm install
 
-# Launch Next.js dev server
+# 3. Launch Next.js development server
 npm run dev
 ```
 
-Open `http://localhost:3000` in your web browser to launch the Symphony Control Plane interface.
+Open `http://localhost:3000` in your browser to launch the Symphony Control Plane visualizer.
 
 ---
 
-## Production Deployment
+## 29. API Reference & Endpoint Specification
 
-### 1. Backend Deployment (Railway)
+### 1. Execute Goal Pipeline
 
-Symphony's FastAPI backend can be deployed to Railway in minutes:
-
-1. Create a new project on [Railway](https://railway.app/).
-2. Select **Deploy from GitHub repo** and select `harness-engineering`.
-3. Set the **Start Command**:
-   ```bash
-   uvicorn app.main:app --host 0.0.0.0 --port $PORT
-   ```
-4. Configure Railway **Environment Variables**:
-   * `ALLOWED_ORIGINS`: `https://your-symphony-frontend.vercel.app`
-   * `PORT`: `8000` (or leave default assigned by Railway)
-5. Copy your deployed Railway backend URL (e.g. `https://symphony-api-production.up.railway.app`).
-
-### 2. Frontend Deployment (Vercel)
-
-Symphony's Next.js dashboard is optimized for deployment on Vercel:
-
-1. Import the repository into [Vercel](https://vercel.com/).
-2. Set the **Root Directory** to `frontend`.
-3. Configure Vercel **Environment Variables**:
-   * `NEXT_PUBLIC_API_URL`: `https://symphony-api-production.up.railway.app` (your deployed Railway backend URL)
-4. Click **Deploy**.
-5. Once deployed, update the backend's `ALLOWED_ORIGINS` on Railway to include your production Vercel URL.
-
-
----
-
-## Execution Example
-
-### Request
-
-Submit an engineering goal to the `/execute` API endpoint:
-
-```bash
-curl -X POST "http://127.0.0.1:8000/execute" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "request_text": "Write spec, research architecture, implement and test a Python module",
-           "run_id": "demo-run-01"
-         }'
+```http
+POST /execute
+Content-Type: application/json
 ```
 
-### Response
+#### Request Body
+```json
+{
+  "request_text": "Write spec, research architecture, implement and test a Python module",
+  "run_id": "demo-run-01"
+}
+```
 
+#### Response Body (`200 OK`)
 ```json
 {
   "run_id": "demo-run-01",
@@ -389,14 +1127,17 @@ curl -X POST "http://127.0.0.1:8000/execute" \
   ],
   "execution_artifacts": {
     "generated_files": {
-      "module.py": "# Generated production implementation module",
-      "spec.md": "# Engineering Specification Document"
+      "spec.md": "# Specification Document...",
+      "architecture_blueprint.md": "# Architecture Blueprint...",
+      "output.py": "# Generated code\nprint('Hello from Symphony!')\n"
     },
     "test_results": {
-      "passed": 4,
-      "failed": 0
+      "passed": true,
+      "failed": 0,
+      "total_runs": 1,
+      "details": "All tests passed successfully."
     },
-    "deployment_status": "READY"
+    "deployment_status": null
   },
   "telemetry_summary": {
     "run_id": "demo-run-01",
@@ -404,12 +1145,15 @@ curl -X POST "http://127.0.0.1:8000/execute" \
     "exit_code": 0,
     "logs": [
       "Deploying artifacts for run: demo-run-01",
-      "Executing script: module.py",
+      "Executing script: spec.md",
+      "Executing script: architecture_blueprint.md",
+      "Executing script: output.py",
       "All scripts executed successfully in production."
     ],
     "metrics": {
       "cpu_utilization": 12.4
-    }
+    },
+    "timestamp": 1725114000.0
   },
   "learning_updates": [
     {
@@ -425,24 +1169,211 @@ curl -X POST "http://127.0.0.1:8000/execute" \
 
 ---
 
-## Design Principles
+### 2. Inspect Shared Memory & State
 
-* **Harness First**: Engineering capabilities are structured as isolated, testable modules rather than monoliths.
-* **Evidence-Driven**: Every output must generate verifiable evidence before entering production runtime.
-* **Organizational Memory**: Knowledge gained in one run is preserved to optimize subsequent engineering tasks.
-* **Human-AI Collaboration**: Clear control plane state visibility allows engineers to inspect, approve, and direct autonomous execution.
+```http
+GET /memory
+```
+
+#### Response Body (`200 OK`)
+```json
+{
+  "traces": {
+    "demo-run-01": [
+      "Engine starting execution of plan containing 5 steps.",
+      "Executing step: step_1_specification (Domain: SPECIFICATION)",
+      "Step step_1_specification logs: Starting Specification Harness execution.; Created spec.md successfully.",
+      "Executing step: step_2_research (Domain: RESEARCH)",
+      "Engine finished plan execution. Total steps run: 5"
+    ]
+  },
+  "context_variables": {
+    "request_text": "Write spec, research architecture, implement and test a Python module",
+    "specification_generated": true,
+    "research_completed": true,
+    "architecture_designed": true,
+    "code_written": true,
+    "evaluation_success": true
+  },
+  "project_state": {
+    "last_active_phase": "EVALUATION"
+  }
+}
+```
 
 ---
 
-## Roadmap
+### 3. Query Semantic Knowledge Graph
 
-- [ ] **Dynamic Harness Discovery**: Dynamic registration of external third-party harness plugins.
-- [ ] **Multi-Agent Cross-Harness Parallelization**: Asynchronous parallel step execution for independent domains.
-- [ ] **Distributed Runtime Execution**: Remote runtime worker execution across Kubernetes clusters.
-- [ ] **Human-in-the-Loop Approval Gates**: Interactive approval checkpoints prior to deployment harness invocation.
+```http
+GET /knowledge-graph
+```
+
+#### Response Body (`200 OK`)
+```json
+[
+  {
+    "subject": "Run:demo-run-01",
+    "predicate": "deployed_successfully",
+    "obj": "StableStatus",
+    "metadata": { "type": "runtime_success" }
+  }
+]
+```
 
 ---
 
-## License
+### 4. Query Failure Repository
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+```http
+GET /failures
+```
+
+#### Response Body (`200 OK`)
+```json
+[
+  {
+    "run_id": "crash-test-01",
+    "component": "ProductionRuntime",
+    "error_message": "Runtime Exception in script buggy.py: simulated runtime failure.",
+    "stack_trace": null,
+    "timestamp": 1725114050.12
+  }
+]
+```
+
+---
+
+### 5. Query Production Telemetry History
+
+```http
+GET /telemetry
+```
+
+#### Response Body (`200 OK`)
+```json
+[
+  {
+    "run_id": "demo-run-01",
+    "status": "RUNNING",
+    "exit_code": 0,
+    "logs": [
+      "Deploying artifacts for run: demo-run-01",
+      "All scripts executed successfully in production."
+    ],
+    "metrics": {
+      "cpu_utilization": 12.4
+    },
+    "timestamp": 1725114000.0
+  }
+]
+```
+
+---
+
+### 6. Health Check
+
+```http
+GET /health
+```
+
+#### Response Body (`200 OK`)
+```json
+{
+  "status": "healthy"
+}
+```
+
+---
+
+## 30. Frontend Control Plane Dashboard
+
+The Next.js 16 frontend provides an interactive engineering cockpit with dark-mode styling:
+
+```mermaid
+flowchart TD
+    subgraph UIViews["Frontend Navigation Tabs (src/components/)"]
+        V1["🚀 Execute View<br/><i>(Intent Input, Real-Time React Flow DAG Animation)</i>"]
+        V2["📊 Dashboard View<br/><i>(Platform Metrics, Execution Summaries, Health)</i>"]
+        V3["🧠 Knowledge Graph View<br/><i>(Semantic RDF Triples Browser & Filters)</i>"]
+        V4["💾 Memory View<br/><i>(Session Variables, Traces, Workspace State)</i>"]
+        V5["📈 Telemetry View<br/><i>(Exit Codes, Hardware Graphs, Runtime Logs)</i>"]
+        V6["⚠️ Failures View<br/><i>(Failure Repository Post-Mortems & Crashes)</i>"]
+    end
+
+    style UIViews fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#fff
+```
+
+### Real-Time Visualizer State Transitions
+
+In the React Flow graph, nodes transition dynamically based strictly on backend API response payload fields (`selected_harnesses` and `execution_plan`):
+
+$$\text{Gray (Idle)} \longrightarrow \text{Yellow (Running)} \longrightarrow \begin{cases} \text{Green (Success)} \\ \text{Red (Failed)} \end{cases}$$
+
+Unselected harnesses remain in the idle state, providing clear visual evidence of domain routing decisions.
+
+---
+
+## 31. Before vs. After Comparison
+
+| Capability Dimension | Traditional AI Coding | Symphony Harness OS |
+| :--- | :--- | :--- |
+| **Execution Paradigm** | Prompt-driven monolithic inference | Environment-driven domain harness orchestration |
+| **Context Management** | Ephemeral window prone to prompt pollution | Progressive context assembly via `PlatformContextManager` |
+| **Verification** | Subjective assertion (*"Looks finished"*) | Objective test outputs in `EvidenceStoreService` |
+| **Architecture Enforcement** | Implicit and unverified | Canonical SDLC ordering via `DomainHarnessRouter` |
+| **Failure Recovery** | Manual prompt retries | Automated capture & post-mortems in `FailureRepository` |
+| **Organizational Memory** | Disappears upon chat termination | Persistent RDF triples in `KnowledgeGraphService` |
+| **Production Telemetry** | None (open-loop generation) | Closed-loop collection of exit codes, logs, and CPU metrics |
+| **Domain Specialization** | Single prompt handles all roles | Dedicated domain harnesses (`Spec`, `Arch`, `Eng`, `Eval`, `Deploy`, `Learn`) |
+
+---
+
+## 32. Limitations
+
+To maintain engineering integrity, current limitations of the implementation are explicitly documented:
+
+1. **In-Memory Store Persistence**: Shared core services (`memory/*`) operate in-memory via the singleton container. Restarting the backend server process resets platform state (suitable for ephemeral container runtimes, but requires an external database for persistent multi-tenant deployments).
+2. **Deterministic Pattern-Based Intent Routing**: `PatternIntentAnalyzer` uses deterministic keyword matching. While fast, transparent, and predictable, it does not currently invoke secondary LLM classifiers for ambiguous intent phrases.
+3. **Simulated Production Runtime**: `ProductionRuntime` simulates artifact execution, exit codes, and hardware metrics. It does not spin up isolated Docker containers or sandboxed microVMs.
+4. **Sequential Execution Engine**: Steps in the `ExecutionPlan` run sequentially; independent domains are not yet executed concurrently across parallel threads.
+
+---
+
+## 33. Future Roadmap
+
+### Phase 1: Reliability & Persistence *(Planned)*
+- [ ] **Persistent Database Adapters**: PostgreSQL and Redis backing for `KnowledgeGraphService`, `FailureRepository`, and `EvidenceStoreService`.
+- [ ] **Docker / MicroVM Sandboxing**: Replace simulated runtime execution with isolated containerized sandboxes for running generated code safely.
+
+### Phase 2: Parallelization & Multi-Agent Orchestration *(Planned)*
+- [ ] **DAG Parallel Execution Engine**: Concurrent execution of independent domain harnesses (e.g., executing `ResearchHarness` and `SpecificationHarness` in parallel).
+- [ ] **Dynamic Plugin Discovery**: Dynamic discovery and loading of external third-party harness plugins via entry points.
+
+### Phase 3: Human-in-the-Loop & Governance *(Exploratory)*
+- [ ] **Interactive Approval Checkpoints**: Webhook and UI confirmation gates prior to `DeploymentHarness` execution.
+- [ ] **Policy DSL**: A domain-specific language for defining complex compliance rules without writing raw Python predicates.
+
+---
+
+## 34. Engineering Lessons
+
+1. **Environment Over Model Size**: Improving the harness (context routing, state persistence, deterministic verification) yields far greater gains in reliability than upgrading the reasoning model alone.
+2. **Evidence Over Assertion**: Autonomous systems must never be trusted based on textual self-reports. Reliability requires hard, machine-verifiable evidence (exit codes, test diffs, policy evaluations).
+3. **Loss as Information**: Failures in autonomous execution are inevitable. When operational failures are captured, structured, and committed as semantic triples, every failure permanently increases organizational intelligence.
+
+---
+
+## 35. References & Citations
+
+1. **OpenAI Harness Engineering Research**: Methodologies for agent evaluation environments, sandboxed execution, and multi-step benchmark harness design.
+2. **Anthropic Agent Workflows & Context Isolation**: Architectural patterns for single-responsibility domain agents and progressive context disclosure.
+3. **W3C Resource Description Framework (RDF)**: Standards for subject-predicate-object semantic data modeling.
+4. **FastAPI & Pydantic Documentation**: Best practices for asynchronous Python REST API design and schema validation.
+5. **React Flow / @xyflow/react**: Graph-based state machine visualization in React.
+
+---
+
+## 36. License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
