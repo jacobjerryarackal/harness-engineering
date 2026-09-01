@@ -14,6 +14,11 @@ class ContextManager(ABC):
         """Assembles an ExecutionContext for the run from shared core services."""
         pass
 
+    @abstractmethod
+    def persist_context(self, context: ExecutionContext) -> None:
+        """Persists updated execution context variables and workspace state to shared services."""
+        pass
+
 class PlatformContextManager(ContextManager):
     """Concrete ContextManager assembling context from shared services."""
 
@@ -43,3 +48,10 @@ class PlatformContextManager(ContextManager):
             policies=policies,
             knowledge_triples=triples
         )
+
+    def persist_context(self, context: ExecutionContext) -> None:
+        """Persists updated execution context variables and workspace states back to shared services."""
+        for k, v in context.variables.items():
+            self._context_service.set_variable(k, v)
+        for k, v in context.state.items():
+            self._state_service.set_state(k, v)

@@ -56,7 +56,10 @@ class SymphonyOrchestrator:
         # 6. Execution Engine Execution
         harness_results = self.execution_engine.execute_plan(plan, context, self.harness_registry)
 
-        # 7. Response Aggregation
+        # 7. Persist Updated Session Context & Workspace State
+        self.context_manager.persist_context(context)
+
+        # 8. Response Aggregation
         artifacts = self.response_aggregator.aggregate_responses(active_run_id, harness_results)
 
         return artifacts
