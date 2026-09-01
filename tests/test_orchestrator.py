@@ -64,5 +64,31 @@ class TestOrchestratorControlPlane(unittest.TestCase):
         self.assertIn("passed", artifacts.test_results)
         self.assertTrue(artifacts.test_results["passed"])
 
+    def test_orchestrator_persists_context_and_state(self) -> None:
+        from memory.context_service import ContextService
+        from memory.state_service import StateService
+        from core.context_manager import PlatformContextManager
+
+        ctx_service = ContextService()
+        st_service = StateService()
+        ctx_mgr = PlatformContextManager(context_service=ctx_service, state_service=st_service)
+
+        orchestrator = SymphonyOrchestrator(
+            context_manager=ctx_mgr,
+            harness_registry=self.registry
+        )
+        artifacts = orchestrator.run("Write spec and code", run_id="run-persist-1")
+
+        self.assertTrue(artifacts.success)
+        # Check context service variables
+        vars_stored = ctx_service.get_all_variables()
+        self.assertIn("request_text", vars_stored)
+        self.assertIn("specification_generated", vars_stored)
+        self.assertIn("code_written", vars_stored)
+
+        # Check state service variables
+        states_stored = st_service.get_all_states()
+        self.assertIn("last_active_phase", states_stored)
+
 if __name__ == "__main__":
     unittest.main()

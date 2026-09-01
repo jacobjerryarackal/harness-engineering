@@ -43,12 +43,17 @@ class TestAPIEndpoints(unittest.TestCase):
         self.assertIn("learning_updates", data)
 
     def test_memory_endpoint(self) -> None:
+        # First execute an engineering intent
+        self.client.post("/execute", json={"request_text": "Write spec and code", "run_id": "mem-test-run"})
         response = self.client.get("/memory")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn("traces", data)
         self.assertIn("context_variables", data)
         self.assertIn("project_state", data)
+        self.assertIn("mem-test-run", data["traces"])
+        self.assertIn("request_text", data["context_variables"])
+        self.assertIn("last_active_phase", data["project_state"])
 
     def test_knowledge_graph_endpoint(self) -> None:
         response = self.client.get("/knowledge-graph")
