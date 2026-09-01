@@ -12,6 +12,18 @@ class TestAPIEndpoints(unittest.TestCase):
         data = response.json()
         self.assertEqual(data["status"], "healthy")
 
+    def test_root_endpoint(self) -> None:
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "healthy")
+
+    def test_ready_endpoint(self) -> None:
+        response = self.client.get("/ready")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "healthy")
+
     def test_execute_endpoint(self) -> None:
         payload = {
             "request_text": "Write spec, implement and test a python module",
