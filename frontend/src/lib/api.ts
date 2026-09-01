@@ -1,4 +1,5 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+export const API_BASE_URL = (rawApiUrl.split(',')[0] || 'http://127.0.0.1:8000').trim().replace(/\/+$/, '');
 
 export interface ExecuteRequest {
   request_text: string;
@@ -65,13 +66,17 @@ export interface TelemetryEntry {
   timestamp: number;
 }
 
-export async function fetchHealth(): Promise<{ status: string }> {
+export async function fetchHealth(): Promise<{ status: string; detail?: string }> {
   try {
     const res = await fetch(`${API_BASE_URL}/health`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Backend unhealthy');
+    if (!res.ok) {
+      console.warn(`[Symphony API] Health probe returned HTTP ${res.status} from ${API_BASE_URL}/health`);
+      return { status: 'offline', detail: `HTTP ${res.status}` };
+    }
     return await res.json();
   } catch (err) {
-    return { status: 'offline' };
+    console.warn(`[Symphony API] Health probe connection failed to ${API_BASE_URL}/health:`, err);
+    return { status: 'offline', detail: err instanceof Error ? err.message : 'Connection failed' };
   }
 }
 
