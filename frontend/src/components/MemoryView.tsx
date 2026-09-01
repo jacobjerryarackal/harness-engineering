@@ -93,7 +93,7 @@ export const MemoryView: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-zinc-500 text-xs font-mono">No active session context variables.</div>
+              <div className="text-center py-8 text-zinc-500 text-xs font-mono">No active session context variables. Run an intent prompt to populate session context.</div>
             )}
           </div>
         </div>
@@ -119,7 +119,7 @@ export const MemoryView: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-zinc-500 text-xs font-mono">No workspace state records.</div>
+              <div className="text-center py-8 text-zinc-500 text-xs font-mono">No workspace state records. Run an intent prompt to populate workspace state.</div>
             )}
           </div>
         </div>
