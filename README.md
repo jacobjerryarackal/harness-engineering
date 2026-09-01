@@ -648,29 +648,28 @@ flowchart TD
 
 ## 23. Architectural Decision Records (ADRs)
 
-### ADR-001: Separation of Control Plane Orchestrator from Model Inference
-* **Status**: Accepted
-* **Decision**: Orchestration logic (`core/orchestrator.py`) is decoupled from LLM providers and model APIs.
-* **Rationale**: Prevents prompt pollution, isolates domain responsibilities, and allows model-agnostic harness testing.
-* **Trade-Off**: Requires structured intent parsing and domain routing abstractions.
+Symphony maintains formal Architecture Decision Records (ADRs) in [`docs/adr/`](docs/adr/README.md) to document key technical decisions, context, alternatives evaluated, and architectural trade-offs:
 
-### ADR-002: In-Memory Singleton Dependency Injection Container
-* **Status**: Accepted
-* **Decision**: Manage shared core services via a centralized singleton dependency container (`app.dependencies.Container`).
-* **Rationale**: Guarantees state consistency across concurrent REST API requests during live execution.
-* **Trade-Off**: State is reset upon server process restart (designed for stateless cloud containers).
+- **High-Level Design (HLD)** ([docs/architecture/hld.png](docs/architecture/hld.png)) describes overall system structure, service layering, and topology.
+- **Low-Level Design (LLD)** ([docs/architecture/lld.png](docs/architecture/lld.png)) documents internal pipeline execution flows and component interactions.
+- **Architecture Decision Records (ADRs)** capture significant architectural decisions, trade-offs, and implementation mappings.
 
-### ADR-003: Canonical SDLC Pipeline Ordering
-* **Status**: Accepted
-* **Decision**: Enforce a strict chronological ordering (`SPECIFICATION` $\rightarrow$ `RESEARCH` $\rightarrow$ `ARCHITECTURE` $\rightarrow$ `ENGINEERING` $\rightarrow$ `EVALUATION` $\rightarrow$ `DEPLOYMENT` $\rightarrow$ `LEARNING`).
-* **Rationale**: Eliminates race conditions and ensures dependencies (e.g., specifications) exist before code generation begins.
-* **Trade-Off**: Prevents out-of-order execution unless explicitly reconfigured.
+### ADR Index Summary
 
-### ADR-004: Closed-Loop Telemetry to Knowledge Graph Transformation
-* **Status**: Accepted
-* **Decision**: Production runtime outputs are automatically parsed for failure events and stored as RDF triples in `KnowledgeGraphService`.
-* **Rationale**: Guarantees that organizational knowledge accumulates permanently over time (*"Loss becomes Information"*).
-* **Trade-Off**: Knowledge graph size grows linearly with the number of executions.
+| ADR | Title | Status | Summary |
+| :--- | :--- | :--- | :--- |
+| [**ADR-0001**](docs/adr/0001-model-agnostic-harness-architecture.md) | Model-Agnostic Harness Architecture | Accepted | Decouples orchestration contracts from specific LLM inference providers. |
+| [**ADR-0002**](docs/adr/0002-domain-specific-harnesses.md) | Domain-Specific Engineering Harnesses | Accepted | Isolates engineering lifecycle responsibilities into 7 specialized harnesses. |
+| [**ADR-0003**](docs/adr/0003-deterministic-dag-execution.md) | Deterministic DAG Execution Planning | Accepted | Enforces canonical topological execution order and sequential step progression. |
+| [**ADR-0004**](docs/adr/0004-verification-gates-before-completion.md) | Verification Gates Before Completion | Accepted | Replaces self-reported completion with policy, evaluation, evidence, and telemetry gates. |
+| [**ADR-0005**](docs/adr/0005-separate-context-workspace-state-traces.md) | Separate Context, Workspace State & Traces | Accepted | Decouples session variables, persistent workspace state, and execution traces. |
+| [**ADR-0006**](docs/adr/0006-persistent-context-lifecycle.md) | Persistent Context Lifecycle Boundary | Accepted | Enforces orchestrator-level `persist_context` commits post-execution. |
+| [**ADR-0007**](docs/adr/0007-closed-loop-runtime-learning.md) | Closed-Loop Runtime Learning | Accepted | Extracts RDF facts and post-mortem failure logs from production telemetry. |
+| [**ADR-0008**](docs/adr/0008-model-agnostic-control-plane.md) | Model-Agnostic Control Plane Routing | Accepted | Implements sub-millisecond pattern analysis and sequential plan formulation. |
+| [**ADR-0009**](docs/adr/0009-react-flow-runtime-visualization.md) | React Flow Runtime Visualization | Accepted | Visualizes dynamic topological control plane execution with interactive DAG nodes. |
+| [**ADR-0010**](docs/adr/0010-persistent-workspace-state.md) | Persistent Workspace State Across Runs | Accepted | Preserves long-lived project state across successive execution runs. |
+
+Full records with problem context, alternatives considered, and code mappings are available in [`docs/adr/`](docs/adr/README.md).
 
 ---
 
