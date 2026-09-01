@@ -201,6 +201,14 @@ Symphony/
 ├── runtime/                            # Production Feedback & Learning Loop
 │   └── [production, telemetry, knowledge_extraction, learning_engine, memory_update].py
 │
+├── docs/                               # Documentation & Architectural Artifacts
+│   ├── architecture/                   # High-Level & Low-Level Design Diagrams
+│   │   ├── hld.png                     # System Layering & Topology HLD
+│   │   └── lld.png                     # Internal Pipeline LLD
+│   └── adr/                            # Architecture Decision Records
+│       ├── README.md                   # ADR Index & Overview
+│       └── [0001-0010]-*.md            # Accepted Technical ADRs
+│
 ├── frontend/                           # Next.js / React Flow Interactive Control Plane UI
 │   └── src/components/                # RealtimeFlow, ExecuteView, MemoryView, RightPanel
 │
@@ -210,6 +218,31 @@ Symphony/
 
 ---
 
-## 11. Conclusion
+## 11. Architecture Decision Records (ADRs)
+
+Symphony maintains formal Architecture Decision Records to capture the context, rationale, and consequences of key architectural choices:
+
+- **High-Level Design (HLD)** describes overall system structure and service layering.
+- **Low-Level Design (LLD)** documents internal pipeline component interactions.
+- **Architecture Decision Records (ADRs)** capture significant architectural decisions, alternatives considered, and trade-offs.
+
+All accepted ADRs are maintained in [`docs/adr/`](docs/adr/README.md):
+
+| ADR | Title | Summary |
+| :--- | :--- | :--- |
+| [**ADR-0001**](docs/adr/0001-model-agnostic-harness-architecture.md) | Model-Agnostic Harness Architecture | Decouples orchestration contracts from specific LLM inference providers. |
+| [**ADR-0002**](docs/adr/0002-domain-specific-harnesses.md) | Domain-Specific Engineering Harnesses | Isolates engineering lifecycle responsibilities into 7 specialized harnesses. |
+| [**ADR-0003**](docs/adr/0003-deterministic-dag-execution.md) | Deterministic DAG Execution Planning | Enforces canonical topological execution order and sequential step progression. |
+| [**ADR-0004**](docs/adr/0004-verification-gates-before-completion.md) | Verification Gates Before Completion | Replaces self-reported completion with policy, evaluation, evidence, and telemetry gates. |
+| [**ADR-0005**](docs/adr/0005-separate-context-workspace-state-traces.md) | Separate Context, Workspace State & Traces | Decouples session variables, persistent workspace state, and execution traces. |
+| [**ADR-0006**](docs/adr/0006-persistent-context-lifecycle.md) | Persistent Context Lifecycle Boundary | Enforces orchestrator-level `persist_context` commits post-execution. |
+| [**ADR-0007**](docs/adr/0007-closed-loop-runtime-learning.md) | Closed-Loop Runtime Learning | Extracts RDF facts and post-mortem failure logs from production telemetry. |
+| [**ADR-0008**](docs/adr/0008-model-agnostic-control-plane.md) | Model-Agnostic Control Plane Routing | Implements sub-millisecond pattern analysis and sequential plan formulation. |
+| [**ADR-0009**](docs/adr/0009-react-flow-runtime-visualization.md) | React Flow Runtime Visualization | Visualizes dynamic topological control plane execution with interactive DAG nodes. |
+| [**ADR-0010**](docs/adr/0010-persistent-workspace-state.md) | Persistent Workspace State Across Runs | Preserves long-lived project state across successive execution runs. |
+
+---
+
+## 12. Conclusion
 
 Symphony establishes a model-agnostic **Autonomous Harness Operating System** that elevates AI software engineering from isolated code generation to structured orchestration. By decoupling control plane routing from specialized domain harnesses and integrating a continuous production learning loop, Symphony ensures every execution permanently enriches organizational intelligence.
