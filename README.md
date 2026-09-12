@@ -1,5 +1,6 @@
 # 🎼 Symphony: Autonomous Harness Operating System
 
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-v2.0+-E92063.svg?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
