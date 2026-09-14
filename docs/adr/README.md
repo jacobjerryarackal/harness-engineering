@@ -2,8 +2,8 @@
 
 This directory contains the formal **Architecture Decision Records (ADRs)** for the **Symphony Autonomous Harness Operating System**.
 
-- **High-Level Design (HLD)** ([docs/architecture/hld.png](../architecture/hld.png)) provides the structural topology and platform layering.
-- **Low-Level Design (LLD)** ([docs/architecture/lld.png](../architecture/lld.png)) documents component-level pipeline interactions.
+- **High-Level Design (HLD)** ([HLD Diagram](../architecture/hld.png)) provides the structural topology and platform layering.
+- **Low-Level Design (LLD)** ([LLD Diagram](../architecture/lld.png)) documents component-level pipeline interactions.
 - **System Design Document** ([SYSTEM_DESIGN.md](../../SYSTEM_DESIGN.md)) and [README.md](../../README.md) define the comprehensive functional specifications.
 - **ADRs** capture the context, rationale, alternatives considered, and trade-offs for key architectural choices across the codebase.
 

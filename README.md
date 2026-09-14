@@ -15,17 +15,18 @@
 ## 📑 Contents
 
 1. [Core Thesis: Harness Engineering vs. Prompt Tweaks](#1-core-thesis-harness-engineering-vs-prompt-tweaks)
-2. [The Repository Harness Architecture](#2-the-repository-harness-architecture)
+2. [Architecture Overview](#architecture-overview)
+3. [The Repository Harness Architecture](#3-the-repository-harness-architecture)
    - [Directory Layout & Infrastructure Breakdown](#directory-layout--infrastructure-breakdown)
    - [Deterministic Feedback Loops: Converting Failures into Invariants](#deterministic-feedback-loops-converting-failures-into-invariants)
-3. [Before vs. After Case Study: Scope Drift & Lockfile Breakage](#3-before-vs-after-case-study-scope-drift--lockfile-breakage)
+4. [Before vs. After Case Study: Scope Drift & Lockfile Breakage](#4-before-vs-after-case-study-scope-drift--lockfile-breakage)
    - [The Unconstrained Failure (Prompt-Only)](#the-unconstrained-failure-prompt-only)
    - [The Deterministic Harness Remediation](#the-deterministic-harness-remediation)
-4. [Setup & Verification Guide](#4-setup--verification-guide)
+5. [Setup & Verification Guide](#5-setup--verification-guide)
    - [Environment Initialization](#environment-initialization)
    - [Attaching an Agent (Gemini, Claude, Copilot)](#attaching-an-agent-gemini-claude-copilot)
    - [Executing Enforcement Scripts Locally](#executing-enforcement-scripts-locally)
-5. [Trade-offs: Over-Constrained Rigidity vs. Unconstrained Drift](#5-trade-offs-over-constrained-rigidity-vs-unconstrained-drift)
+6. [Trade-offs: Over-Constrained Rigidity vs. Unconstrained Drift](#6-trade-offs-over-constrained-rigidity-vs-unconstrained-drift)
    - [The Failure vs. Friction Matrix](#the-failure-vs-friction-matrix)
    - [Calibrated Architecture: The Layered Defense Strategy](#calibrated-architecture-the-layered-defense-strategy)
 
@@ -43,29 +44,9 @@ A standard LLM is an autoregressive probabilistic engine. Relying exclusively on
 
 ### The Harness Formula
 
-In this repository, **Harness Engineering** is defined by a rigorous mechanical formula:
+In this repository, **Harness Engineering** is defined by a mechanical model:
 
-$$\mathbf{Harness} = \mathbf{Instructions} + \mathbf{Constraints} + \mathbf{Enforceable\ Feedback} + \mathbf{Verification}$$
-
-```mermaid
-flowchart LR
-    subgraph PromptEng["Fragile: Prompt Engineering Alone"]
-        direction TB
-        P1["Natural Language Prompt<br/>'Please do not touch requirements.txt'"] --> M1["Foundation Model"]
-        M1 --> A1["Unconstrained Tool Execution"]
-        A1 --> F1["Silent Drift & Broken Builds"]
-    end
-
-    subgraph HarnessEng["Durable: Harness Engineering"]
-        direction TB
-        P2["Structured Instructions<br/>.github/instructions/"] --> M2["Foundation Model"]
-        M2 --> G1{"Deterministic Boundary Gate<br/>scripts/enforce_harness.py"}
-        G1 -- Violation --> E1["Machine-Readable AST/Diff Feedback"]
-        E1 --> M2
-        G1 -- Valid Scope --> V1{"Verification Gates<br/>Pytest + Type Check"}
-        V1 -- Pass --> C1["Immutable Commit & Evidence Store"]
-    end
-```
+> **Harness = Instructions + Constraints + Enforceable Feedback + Verification**
 
 ### Why Shaping the Runtime Environment Produces High Reliability
 
@@ -77,7 +58,21 @@ When engineering rules are enforced by the **runtime environment** (sandboxed to
 
 ---
 
-## 2. The Repository Harness Architecture
+## Architecture Overview
+
+Symphony decouples agent orchestration from model inference by routing tasks through a deterministic control plane, modular domain harnesses, and persistent shared core services. Rather than giving an agent unrestricted environment access, the system coordinates execution through a topological plan, evaluates every step against concrete policies, and captures runtime telemetry to feed post-mortem learnings back into organizational memory.
+
+![Symphony High-Level Architecture](docs/architecture/hld.png)
+
+### Core Architecture Documentation
+
+* **[High-Level Design (HLD)](docs/architecture/hld.png)**: Illustrates the five-tier system topology covering the external interface, control plane, domain harnesses, shared memory services, and runtime feedback loop. A complete textual description is in [SYSTEM_DESIGN.md (Section 4)](SYSTEM_DESIGN.md#4-high-level-design-hld).
+* **[Low-Level Design (LLD)](docs/architecture/lld.png)**: Diagrams the internal control plane execution pipeline, detailing step progression from intent analysis through sequential planning to artifact aggregation. A complete textual description is in [SYSTEM_DESIGN.md (Section 5)](SYSTEM_DESIGN.md#5-low-level-design-lld--control-plane-pipeline).
+* **[Architecture Decision Records (ADRs)](docs/adr/README.md)**: Contains 10 accepted architectural decision records documenting the technical rationale, trade-offs, and invariants governing model-agnostic orchestration, deterministic DAG execution, and verification gates.
+
+---
+
+## 3. The Repository Harness Architecture
 
 The Symphony repository couples a modular control plane with an active, deterministic agent enforcement harness.
 
@@ -162,7 +157,7 @@ flowchart TD
 
 ---
 
-## 3. Before vs. After Case Study: Scope Drift & Lockfile Breakage
+## 4. Before vs. After Case Study: Scope Drift & Lockfile Breakage
 
 ### The Unconstrained Failure (Prompt-Only)
 
@@ -244,7 +239,7 @@ The model is trapped by the environment. It cannot commit, cannot declare victor
 
 ---
 
-## 4. Setup & Verification Guide
+## 5. Setup & Verification Guide
 
 Follow this guide to clone the repository, attach an agent, and execute the deterministic harness enforcement locally.
 
@@ -340,7 +335,7 @@ pytest -v
 
 ---
 
-## 5. Trade-offs: Over-Constrained Rigidity vs. Unconstrained Drift
+## 6. Trade-offs: Over-Constrained Rigidity vs. Unconstrained Drift
 
 Designing coding-agent harnesses requires balancing architectural safety against developer velocity and agent problem-solving capacity.
 
@@ -406,8 +401,4 @@ For deep technical architectural designs, control plane lifecycle diagrams, and 
 
 ## 📄 License
 
-<<<<<<< HEAD
 This repository is distributed under the MIT License. See [LICENSE](LICENSE) for details.
-=======
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
->>>>>>> 777ffb2c2d0404c82648eb851f85de149f0d38bd

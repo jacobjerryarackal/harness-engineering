@@ -122,6 +122,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--check-boundaries-only",
+        "--check-boundaries",
         action="store_true",
         help="Only verify filesystem boundaries and protected paths.",
     )
