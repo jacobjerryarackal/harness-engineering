@@ -1,5 +1,6 @@
 # 🎼 Symphony: Autonomous Harness Engineering Framework
 
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-v2.0+-E92063.svg?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
@@ -405,4 +406,8 @@ For deep technical architectural designs, control plane lifecycle diagrams, and 
 
 ## 📄 License
 
+<<<<<<< HEAD
 This repository is distributed under the MIT License. See [LICENSE](LICENSE) for details.
+=======
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
+>>>>>>> 777ffb2c2d0404c82648eb851f85de149f0d38bd
