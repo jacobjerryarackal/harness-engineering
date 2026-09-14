@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+# Pre-commit hook for deterministic agent harness verification
+echo "[HARNESS] Running pre-commit enforcement checks..."
+python scripts/enforce_harness.py
+if [ $? -ne 0 ]; then
+    echo "[HARNESS ERROR] Commit rejected by deterministic harness enforcement."
+    exit 1
+fi
+exit 0
